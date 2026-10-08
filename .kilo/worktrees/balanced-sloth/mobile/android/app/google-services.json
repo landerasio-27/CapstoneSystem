@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "618751201108",
+    "project_id": "capstonesystem-c0d36",
+    "storage_bucket": "capstonesystem-c0d36.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:618751201108:android:e07ae56870d2240edac2c1",
+        "android_client_info": {
+          "package_name": "edu.isu.cauayan.isu_supply_inspector"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0J5MXjaRhFECD7pZhN4w6yllziKDCdZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

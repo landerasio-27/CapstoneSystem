@@ -1,0 +1,1866 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monthly Report — Report of Supplies and Materials Issued</title>
+    <style>
+    @page { size: A4 portrait; margin: 10mm 9mm 12mm 9mm; }
+
+    * { box-sizing: border-box; }
+
+    .doc {
+        color: #000;
+        background: #fff;
+        /* The official forms are written in Calibri. dompdf cannot reach a
+           system font, so "DejaVu Sans" stays in the list as the font it can
+           embed — the page looks the same everywhere and never falls back to
+           a serif. */
+        font-family: Calibri, Carlito, "DejaVu Sans", Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        /* The sheet's own printing stands bold — its labels, its headings, the
+           wording it carries and the names it identifies — while what is
+           written into it, the entries and figures, is set in the same face at
+           normal weight. Each bold part is marked where the form prints it, so
+           nothing comes out bold by accident. */
+        font-weight: normal;
+        /* The line the sheet's entries are written on. The two printers of this
+           sheet do not agree on what a line box is — a browser gives it this
+           figure, while the exporter gives it one a third taller — so the
+           pages are measured for each of them rather than for one alone (see
+           SheetPages). The sheet itself stays as the form sets it. */
+        line-height: 1.25;
+    }
+
+    /* ---- Heading ------------------------------------------------------- */
+    .doc-title {
+        margin: 0;
+        text-align: center;
+        font-size: 13px;
+        font-weight: bold;
+        letter-spacing: .4px;
+        text-transform: uppercase;
+    }
+    .doc-org {
+        margin: 1px 0 6px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    /* ---- Tables -------------------------------------------------------- */
+    .doc-grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    .doc-grid th,
+    .doc-grid td {
+        border: 1px solid #000;
+        padding: 2px 4px;
+        vertical-align: top;
+    }
+    /* Stacked tables share one continuous rule instead of doubling it. */
+    .doc-grid.no-top th,
+    .doc-grid.no-top td { border-top: none; }
+    .doc-grid thead { display: table-header-group; }   /* repeat the header on every page */
+    .doc-grid tfoot { display: table-footer-group; }
+    .doc-grid tr { page-break-inside: avoid; }         /* never cut a row in half */
+    .doc-grid thead th {
+        background: #fff;
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+    }
+    /* The recapitulation's headings are not headings of the list: the block is
+       the accounting unit's to fill in, so everything on it — the band over the
+       top and the words under it — stands at the sheet's own weight, the weight
+       the entries and figures above are written in. The list's own headings are
+       the form's bold printing and keep their face. */
+    .doc-recap th { font-weight: normal; }
+    /* The band across the recapitulation's head is not a heading either: it is
+       the form's own label over the block, printed at the sheet's own weight
+       like every other written line the offices fill in. */
+    .doc-grid .band { text-align: center; }
+    .doc-grid .lbl { font-weight: bold; white-space: nowrap; }
+    .doc-grid .blank { border: none; }
+
+    /* ---- Header block ------------------------------------------------ */
+    /* The report's name, the agency and the date share one frame, with no
+       rules between the cells: only the written values are ruled. The frame
+       lives on the table, because the cells carry no borders of their own. */
+    .doc-head { border: 1px solid #000; }
+    .doc-head th,
+    .doc-head td { border: none; }
+    .doc-head .doc-title,
+    .doc-head .doc-org { margin: 0; padding: 1px 4px; }
+    /* The number's field sits at the right side of the sheet, the width of the
+       entry it carries: the label stands in front of it, clear of the rule,
+       and the line runs from just past the label to its own end, which meets
+       the frame's right border. The field is only as wide as the number it was
+       drawn for — a blank form leaves the same width for the office to write
+       one in — so the pair sits against the right border instead of the line
+       trailing away across the middle of the sheet with nothing written on it. */
+    .doc-head .doc-sign-line {
+        /* Counted the way the exporter counts it, so the print sheet and the
+           PDF rule the same line to the same place. Counted in points for the
+           same reason: the blank a blank form leaves is a fixed width, not a
+           share of whatever the frame happens to measure. */
+        box-sizing: content-box;
+        /* A hair under what the number itself measures, so the line hugs the
+           entry it was drawn for and a blank form's line is the same width. */
+        min-width: 50pt;
+        /* The entry is written at the head of the line, straight after the
+           label that introduces it, as the form has it — the line is drawn for
+           the entry, so the entry stands where it is read. */
+        text-align: left;
+        padding: 0 14px 1px;
+        /* The rule is drawn into the frame's own border. The cell keeps its
+           right padding for the words it carries, but that padding would end
+           the line a hair short of the border and leave the two rules looking
+           like one broken edge; the box overhangs the padding instead, so the
+           line and the border meet as the single rule the form shows. */
+        margin-right: -5px;
+    }
+    /* On the working page the number is written into that same rule instead of
+       being printed on it: a field measured exactly as the printed entry is,
+       so what the generator shows and what the sheet rules are one line rather
+       than two that nearly meet. Only the generator draws it — the printed
+       sheet and the PDF are handed the number as the written line it looks
+       like, since neither of them can be typed into. */
+    .doc-head .doc-no-entry {
+        box-sizing: content-box;
+        /* The room the form leaves for the entry before the pen widens it to
+           fit what is actually written. */
+        width: 50pt;
+        min-width: 50pt;
+        text-align: left;
+        padding: 0 14px 1px;
+        margin-right: -5px;
+        border-bottom: 1px solid #000;
+        font: inherit;
+        line-height: inherit;
+        /* The sheet is written in ink on paper whatever the page around it is
+           set in: the application's dark theme paints every field dark, and on
+           the white sheet the number would otherwise stand on a dark chip with
+           the rule a shade of its own. The paper's own colours are forced for
+           that reason, so the working page reads like the sheet it holds. */
+        color: #000 !important;
+        background: transparent !important;
+        border-color: #000 !important;
+        caret-color: #000;
+    }
+    /* It is the sheet's own writing, not a control standing on it: no ring
+       around it when the office clicks in to write. */
+    .doc-head .doc-no-entry:focus { outline: none; }
+    /* The label rides the same box as the line it introduces, so the two sit
+       on one baseline on the print sheet and in the exported paper alike. */
+    .doc-head .doc-no-label { display: inline-block; padding: 0 6px 1px 0; }
+    /* The agency and the date are written straight after their labels, each on
+       a line exactly as long as the words it carries. */
+    .doc-head .doc-head-line { text-decoration: underline; }
+
+    .doc-c { text-align: center; }
+    .doc-r { text-align: right; }
+    .doc-l { text-align: left; }
+    .doc-t { vertical-align: top; }
+    .doc-m { vertical-align: middle; }
+    .doc-b { font-weight: bold; }
+    .doc-i { font-style: italic; }
+    .doc-small { font-size: 13px; }
+    .doc-nowrap { white-space: nowrap; }
+
+    /* The item block: the name, then the full description underneath. Long
+       descriptions wrap and the row grows with them — never truncated. */
+    .doc-name { font-weight: bold; }
+    .doc-desc { margin-top: 1px; }
+
+    /* The item area is ruled by its own columns alone: the verticals run from
+       the headings down to the recapitulation, and no line is drawn between
+       the entries, under the closing line, or under the line an empty report
+       stands its message on — the form's sheet is written on that way, not on
+       a grid. The block is closed by one rule at its foot, the line the
+       recapitulation opens with: drawn here, so the two tables share the one
+       line instead of stacking two rules on top of each other. */
+    .doc-items tbody tr.doc-noline td { border-top: none; border-bottom: none; }
+    .doc-items tbody tr.doc-foot td { border-bottom: 1px solid #000; }
+    /* A list whose columns are held to the sheet's own: the shares are read off
+       the table's first row and kept there, so a long description — or the run
+       of asterisks that closes the list — cannot widen its column and walk the
+       verticals off the lines the headings above them draw. Only a table whose
+       first row names every column may carry this: the widths are taken from
+       that row alone, and a table that opens with a banner spanning its columns
+       instead would have its width divided evenly between them. */
+    .doc-fixed { table-layout: fixed; }
+    /* The line a table names its columns on: it carries the shares alone, so it
+       takes no height and draws nothing. It is written at the head of the
+       banner that opens the item block, which cannot name the columns itself —
+       its spans would be read as an even division of the width — and must
+       still be ruled on the same columns as the list below it. */
+    .doc-grid .doc-measure td {
+        height: 0;
+        padding: 0;
+        border: none;
+        font-size: 0;
+        line-height: 0;
+    }
+
+    /* The "Nothing Follows" line that closes the item list: a run of asterisks
+       around the words. It is written in the form's own font, so it stands the
+       same size as the entries above it, and is cut off rather than wrapped
+       when a column cannot hold the whole run. The words themselves stay at
+       the lighter weight the form writes them in. */
+    .doc-fill {
+        font-weight: normal;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    /* The totals line is written into the form, not printed on it: the word
+       TOTAL and the figures it adds up stand at the sheet's own weight, like
+       the lines above them. Nothing marks the row but the class it carries. */
+
+    /* The recapitulation block keeps the official sheet's own columns, with
+       each heading held inside its column: the money columns are narrow enough
+       that their labels would otherwise wrap, so the words are kept on one
+       line. The two that meet at 76.5 per cent are wide enough to hold them
+       — "TOTAL COST" is the longest word on the sheet and sits inside the
+       column the line gives it, with the ruling clear of the letters. */
+    .doc-recap th,
+    .doc-recap td { padding: 2px 2px; }
+    /* The headings run edge to edge in their columns: side padding would eat
+       into the little room the narrowest of them has, and the money columns
+       are ruled tight around the words they carry. */
+    .doc-recap th { padding: 2px 0; }
+    /* Two of the block's lines are not drawn on the form: the quantity heading
+       stands at the left of the open middle with no rule between them, and the
+       two money columns share one cell below their headings. A seam is a line
+       of the grid the form leaves unruled, so both cells that meet along it
+       drop their border there. */
+    .doc-recap .doc-seam-r { border-right: none; }
+    .doc-recap .doc-seam-l { border-left: none; }
+    /* The strip the item list's own number column leaves beside the block, and
+       the rule that closes the block's left side: the vertical the list rules
+       that column with is carried straight on down the strip, from where the
+       list ends to the block's own foot line, so the block stands closed on
+       its left and the strip reads as the column's foot. The cell keeps the
+       width the list gives that column — the block's headings stay over the
+       columns the entries above were written on — and gives up only the row
+       rules that would cut it into empty little boxes. The cells beside it
+       drop the rule along that seam, so the vertical is drawn once. */
+    .doc-recap .doc-strip { border-bottom: none; }
+    /* The line that ends the block is the sheet's own: the strip's last cell
+       keeps the block's closing rule along its foot — carried out to the
+       sheet's left edge, where it meets the edge coming down — as well as the
+       vertical its own right border draws. The bottom border is named again
+       rather than left to the rule above: same weight, so the line last
+       written is the one that stands. */
+    .doc-recap .doc-strip-end { border-bottom: 1px solid #000; }
+    /* The strip reads on up into the list: the line that closes the entries
+       stops at the strip as the block's own rules do, so the number column
+       runs down to the block's foot line with nothing drawn across the strip
+       at the list's end. The cell keeps the rule parting that column from the
+       end-user beside it — the vertical ends where the list does, as the form
+       draws it. Only the strip is given up, and only by the foot line, so the
+       list's own lines above it are ruled as they were. */
+    .doc-grid tbody tr.doc-foot td.doc-strip { border-bottom: none; }
+    /* The band across the head of the block: the word twice, once over the
+       issued stock and its quantity and once over what it cost, in a face a
+       shade larger than the headings below it and at the sheet's own weight. The band stands beside the
+       stock number's column rather than under it, so the first run centres in
+       the columns it names with no box of its own; the second hangs in a box
+       drawn back a little to the left of the cost column's centre, the way
+       the form prints it. */
+    .doc-recap .band {
+        white-space: nowrap;
+        font-size: 16px;
+        line-height: 1.2;
+        padding: 0;
+    }
+    /* The box is the cost column's own width, so the word centres in the line
+       that parts it from the total cost. Counted for the columns the RIS rules
+       that group with — 14.5 and 9.5 per cent of the sheet's width. */
+    .doc-recap .band-cost {
+        width: 78.8pt;
+        margin-left: -20.4pt;
+    }
+    /* The ICS rules its list on a wider grid, so the money group its second run
+       heads is wider than the box the RIS draws the word in. On the RIS the box
+       is set back from the group's centre; there it is left to stand centred in
+       the group the ruling gives it, so the word heads what it names while the
+       two papers' blocks keep their own columns. */
+    .doc-recap-ics .band-cost {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* The empty lines of a blank form: ruled rows to write on. */
+    .doc-blank td { height: 15px; }
+
+    /* The closing recapitulation moves to the next page as one block rather
+       than leaving its TOTAL row orphaned behind the items. */
+    .doc-keep { page-break-inside: avoid; }
+
+
+
+    /* ---- Statement ----------------------------------------------------- */
+    .doc-empty {
+        border: 1px solid #000;
+        padding: 26px 12px;
+        text-align: center;
+        font-style: italic;
+    }
+
+    /* ---- Certification ------------------------------------------------ */
+    /* The block the form closes with: the statement over an open area and
+       the lines the two offices post and sign on. Only the frame, the
+       divider that closes the statement, and the two rules the names and
+       titles hang from are drawn — the rest of the block stays open, the
+       way the official form leaves it. */
+    /* The signing block travels as one piece: a report that runs out of room
+       carries the whole certification over to the next page rather than
+       leaving its last row — the titles the two offices sign under — stranded
+       on a page of its own. The recapitulation above it does the same, so the
+       sheet closes in whole blocks and the items fill the page they are on. */
+    .doc-grid.doc-cert { border: 1px solid #000; border-top: none; page-break-inside: avoid; }
+    .doc-grid.doc-cert td {
+        border: none;
+        padding: 2px 4px;
+        vertical-align: top;
+    }
+    /* The block is written into and signed, so only the officer's name stands
+       bold, the way the printed name does on the signing lines below: the
+       statement the form carries, the caption the two offices post under and
+       the titles under them stay at the sheet's own weight, like the entries
+       and figures above. */
+    .doc-grid.doc-cert .doc-cert-statement {
+        height: 28pt;
+        border-right: 1px solid #000;
+    }
+    .doc-grid.doc-cert .doc-cert-divider { border-right: 1px solid #000; }
+    /* The rule the supply officer's name is written above, and the rule the
+       positions sit under. Both stop short of the divider, as on the form.
+       The officer's name is the form's own printing standing on that rule, so
+       it carries the bold face the signing lines give their printed names. */
+    .doc-grid.doc-cert .doc-cert-name {
+        height: 14pt;
+        vertical-align: bottom;
+        border-bottom: 1px solid #000;
+        font-weight: bold;
+    }
+    /* The positions the two offices sign under, on the rule they hang from. */
+    .doc-grid.doc-cert .doc-cert-rule { border-top: 1px solid #000; }
+    /* Open space between the officer's rule and the titles' rules. */
+    .doc-grid.doc-cert .doc-cert-gap td { height: 14pt; }
+
+    /* ---- Signatures ---------------------------------------------------- */
+    .doc-sig-space { height: 30px; }
+    /* The printed name stands bold on its rule; the small captions under the
+       rules ("Signature Over Printed Name", "Position") are the form's own
+       wording, so they are bold too. */
+    .doc-sig-name { font-weight: bold; }
+    .doc-sig-label { font-size: 13px; font-weight: bold; }
+    /* The ruled line a name, position or date is written on. */
+    .doc-sign-line {
+        display: inline-block;
+        min-width: 75%;
+        padding: 0 6px 1px;
+        border-bottom: 1px solid #000;
+        text-align: center;
+    }
+
+    /* ---- Name page ----------------------------------------------------- */
+    /* When one run covers both the RIS and the ICS, each report opens with a
+       page naming it. It holds nothing but the name, so it cannot be mistaken
+       for a report's own first page. */
+    .doc-cover { text-align: center; padding-top: 70mm; }
+    .doc-cover-title {
+        margin: 8px 0 0;
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+    .doc-cover-name {
+        margin-top: 8mm;
+        font-size: 54px;
+        font-weight: bold;
+        letter-spacing: 10px;
+        text-transform: uppercase;
+    }
+    /* No number on this page: it names a paper rather than reporting one, so it
+       takes no place in the run's numbering. */
+    .doc-cover-period { margin-top: 6mm; font-size: 13px; font-weight: bold; }
+
+    /* One ICS slip per custodian: each starts on its own page. */
+    .doc-sheet + .doc-sheet { page-break-before: always; }
+
+    /* On screen the slips stack inside one sheet (page breaks only exist on
+       paper), so separate them visually instead. */
+    @media screen {
+        .doc-sheet + .doc-sheet {
+            margin-top: 10mm;
+            padding-top: 10mm;
+            border-top: 1px dashed #94a3b8;
+        }
+    }
+
+    /* ---- Screen-only chrome (ignored by dompdf) ------------------------ */
+    /* The sheet as it appears in the browser preview and in the print view. */
+    .doc-paper {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 12px auto 24px;
+        padding: 10mm 9mm;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .18);
+    }
+    .doc-inline {
+        width: 210mm;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 10mm 9mm;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .18);
+    }
+    .doc-bar {
+        max-width: 210mm;
+        margin: 0 auto;
+        padding: 12px 9mm;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        font-family: "DejaVu Sans", Arial, sans-serif;
+        font-size: 12px;
+    }
+    .doc-bar a,
+    .doc-bar button {
+        display: inline-block;
+        padding: 8px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f172a;
+        font-family: inherit;
+        font-size: 12px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .doc-bar .primary { background: #166534; border-color: #166534; color: #fff; }
+    .doc-bar .spacer { margin-right: auto; }
+    /* The note about the browser's own print header and footer sits at the
+       front of the bar, where it is read before the buttons are pressed. */
+    .doc-bar .hint {
+        flex: 1 1 320px;
+        color: #64748b;
+        line-height: 1.4;
+    }
+
+    @media print {
+        /* Only the paper prints. Reached even when the reader prints the
+           generator page straight from the browser, so the sidebar, the
+           header, the filters and the buttons never reach the page. */
+        #sidebar, #sidebar-overlay, .app-header, .doc-bar, .doc-nonprint,
+        nav[aria-label="Breadcrumb"], .doc-scroll { display: none !important; }
+
+        body { background: #fff !important; }
+        #app-main { margin-left: 0 !important; }
+        main { padding: 0 !important; }
+
+        .doc-paper,
+        .doc-inline {
+            width: auto !important;
+            max-width: none !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+</head>
+<body>
+    
+    <div class="doc-bar">
+        
+        <span class="hint">For a clean sheet, untick <strong>Headers and footers</strong> in the print dialog — that is what prints the date, the title and this page's address.</span>
+        <a class="spacer" href="http://127.0.0.1:8000/admin/reports/monthly?month=1&amp;year=2026&amp;document_type=all">Back to generator</a>
+        <a href="http://127.0.0.1:8000/admin/reports/monthly/pdf?month=1&amp;year=2026&amp;document_type=all">Export PDF</a>
+        <button type="button" class="primary" onclick="window.print()">Print this document</button>
+    </div>
+
+    <div class="doc-paper">
+        <div class="doc doc-sheet doc-cover">
+            <div class="doc-org">Isabela State University - Cauayan Campus</div>
+            <h1 class="doc-cover-title">Report of Supplies and Materials Issued</h1>
+            <div class="doc-cover-name">RIS</div>
+            <div class="doc-cover-period">For the period JANUARY 01-31, 2026</div>
+        </div>
+    
+            <div class="doc doc-sheet">
+            
+            <table class="doc-grid doc-head">
+    <tbody>
+        <tr>
+            <td colspan="5" class="doc-c doc-title">Report of Supplies and Materials Issued</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="doc-c doc-org">Isabela State University - Cauayan Campus</td>
+        </tr>
+        <tr>
+            
+            <td colspan="5" class="lbl doc-r"><span class="doc-no-label">NO:</span><span class="doc-sign-line">2026-01-01</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r" style="width:12%;">AGENCY:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">Isabela State University - Cauayan Campus</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r">DATE:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">JANUARY 01-31, 2026</span></td>
+        </tr>
+            </tbody>
+</table>
+            <table class="doc-grid doc-banner doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        <tr>
+            <th colspan="5" class="doc-i">To be filled up in the Supply and Property Unit</th>
+            <th colspan="2" class="doc-i">To be Filled up by Accounting Unit</th>
+        </tr>
+    </thead>
+</table>
+
+<table class="doc-grid doc-items doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            <th style="width:14.5%;">RIS NO.</th>
+            <th style="width:11.5%;">End-User</th>
+            <th style="width:36%;">Item / Description</th>
+            <th style="width:7%;">UNIT</th>
+            <th style="width:7.5%;">QNTY<br>ISSUED</th>
+            <th style="width:9.5%;">UNIT COST</th>
+            <th style="width:14%;">AMOUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00002</td>
+                <td>Cristina Bautista</td>
+                <td>
+                    <div class="doc-name">Folder (Long, Brown)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">9</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Epson ink</div>
+                                            <div class="doc-desc">Epson ink<br />
+Epson ink<br />
+Epson ink</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">13</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Bond Paper A4 (Ream)</div>
+                                    </td>
+                <td class="doc-c">ream</td>
+                <td class="doc-c">17</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Ballpoint Pen (Black)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">21</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00003</td>
+                <td>Ricardo Ramos</td>
+                <td>
+                    <div class="doc-name">Epson ink</div>
+                                            <div class="doc-desc">Epson ink<br />
+Epson ink<br />
+Epson ink</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">12</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Bond Paper A4 (Ream)</div>
+                                    </td>
+                <td class="doc-c">ream</td>
+                <td class="doc-c">16</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00004</td>
+                <td>Angelica Fernandez</td>
+                <td>
+                    <div class="doc-name">Bond Paper A4 (Ream)</div>
+                                    </td>
+                <td class="doc-c">ream</td>
+                <td class="doc-c">15</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Ballpoint Pen (Black)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">19</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Printer Ink Bottle (Black)</div>
+                                    </td>
+                <td class="doc-c">bottle</td>
+                <td class="doc-c">23</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00038</td>
+                <td>Michael Tolentino</td>
+                <td>
+                    <div class="doc-name">Ballpoint Pen (Black)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">18</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Printer Ink Bottle (Black)</div>
+                                    </td>
+                <td class="doc-c">bottle</td>
+                <td class="doc-c">22</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Whiteboard Marker</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">6</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Folder (Long, Brown)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">10</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Epson ink</div>
+                                            <div class="doc-desc">Epson ink<br />
+Epson ink<br />
+Epson ink</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">14</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00050</td>
+                <td>Cristina Bautista</td>
+                <td>
+                    <div class="doc-name">Printer Ink Bottle (Black)</div>
+                                    </td>
+                <td class="doc-c">bottle</td>
+                <td class="doc-c">21</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Whiteboard Marker</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">5</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+        
+        
+                    
+            <tr class="doc-noline doc-foot">
+                
+                <td class="doc-strip"></td>
+                <td></td>
+                <td colspan="4" class="doc-c doc-fill"></td>
+                <td></td>
+            </tr>
+            </tbody>
+</table>
+                        
+            <table class="doc-grid doc-cert no-top">
+    <tbody>
+        <tr>
+            <td colspan="2" class="doc-cert-statement">I HEREBY CERTIFY TO THE CORRECTNESS OF THE ABOVE INFORMATION</td>
+            <td class="doc-cert-post">Posted By/ Date:</td>
+            <td class="doc-r doc-cert-post">Posted By/ Date:</td>
+        </tr>
+        
+        <tr>
+            <td class="doc-cert-name doc-c" style="width:44.4%;">Supply Office Administrator</td>
+            <td class="doc-cert-divider" style="width:11.6%;"></td>
+            <td style="width:21%;"></td>
+            <td style="width:23%;"></td>
+        </tr>
+        
+        <tr class="doc-cert-gap">
+            <td></td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="doc-c doc-cert-rule">Administrative Officer V</td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td class="doc-c doc-cert-rule">Accounting Clerk</td>
+        </tr>
+    </tbody>
+</table>
+        </div>
+            <div class="doc doc-sheet">
+            
+            <table class="doc-grid doc-head">
+    <tbody>
+        <tr>
+            <td colspan="5" class="doc-c doc-title">Report of Supplies and Materials Issued</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="doc-c doc-org">Isabela State University - Cauayan Campus</td>
+        </tr>
+        <tr>
+            
+            <td colspan="5" class="lbl doc-r"><span class="doc-no-label">NO:</span><span class="doc-sign-line">2026-01-02</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r" style="width:12%;">AGENCY:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">Isabela State University - Cauayan Campus</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r">DATE:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">JANUARY 01-31, 2026</span></td>
+        </tr>
+            </tbody>
+</table>
+            <table class="doc-grid doc-banner doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        <tr>
+            <th colspan="5" class="doc-i">To be filled up in the Supply and Property Unit</th>
+            <th colspan="2" class="doc-i">To be Filled up by Accounting Unit</th>
+        </tr>
+    </thead>
+</table>
+
+<table class="doc-grid doc-items doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            <th style="width:14.5%;">RIS NO.</th>
+            <th style="width:11.5%;">End-User</th>
+            <th style="width:36%;">Item / Description</th>
+            <th style="width:7%;">UNIT</th>
+            <th style="width:7.5%;">QNTY<br>ISSUED</th>
+            <th style="width:9.5%;">UNIT COST</th>
+            <th style="width:14%;">AMOUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00050</td>
+                <td>Cristina Bautista</td>
+                <td>
+                    <div class="doc-name">Folder (Long, Brown)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">9</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00051</td>
+                <td>Ricardo Ramos</td>
+                <td>
+                    <div class="doc-name">Whiteboard Marker</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">24</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Folder (Long, Brown)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">8</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Epson ink</div>
+                                            <div class="doc-desc">Epson ink<br />
+Epson ink<br />
+Epson ink</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">12</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Bond Paper A4 (Ream)</div>
+                                    </td>
+                <td class="doc-c">ream</td>
+                <td class="doc-c">16</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00052</td>
+                <td>Angelica Fernandez</td>
+                <td>
+                    <div class="doc-name">Folder (Long, Brown)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">7</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Epson ink</div>
+                                            <div class="doc-desc">Epson ink<br />
+Epson ink<br />
+Epson ink</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">11</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Bond Paper A4 (Ream)</div>
+                                    </td>
+                <td class="doc-c">ream</td>
+                <td class="doc-c">15</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Ballpoint Pen (Black)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">19</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Printer Ink Bottle (Black)</div>
+                                    </td>
+                <td class="doc-c">bottle</td>
+                <td class="doc-c">23</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">RIS-2026-00053</td>
+                <td>Michael Tolentino</td>
+                <td>
+                    <div class="doc-name">Epson ink</div>
+                                            <div class="doc-desc">Epson ink<br />
+Epson ink<br />
+Epson ink</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">10</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Bond Paper A4 (Ream)</div>
+                                    </td>
+                <td class="doc-c">ream</td>
+                <td class="doc-c">14</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Ballpoint Pen (Black)</div>
+                                    </td>
+                <td class="doc-c">piece</td>
+                <td class="doc-c">18</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+        
+        
+                    
+            <tr class="doc-noline doc-foot">
+                
+                <td class="doc-strip"></td>
+                <td></td>
+                <td colspan="4" class="doc-c doc-fill">**************************Nothing Follows**************************</td>
+                <td></td>
+            </tr>
+            </tbody>
+</table>
+                            <table class="doc-grid doc-recap doc-fixed no-top doc-keep">
+    <tbody>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:10%;"></td>
+                            <td style="width:26%;"></td>
+                            <td style="width:14.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            
+            <td class="doc-strip"></td>
+            <td colspan="3" class="band doc-seam-l doc-seam-r"><div class="band-issue">Recapitulation</div></td>
+            <td class="band doc-seam-l"><div class="band-cost">Recapitulation</div></td>
+            <td colspan="2" class="band"></td>
+        </tr>
+        <tr>
+            <th class="doc-c doc-strip" style="width:14.5%;"></th>
+            <th class="doc-c doc-nowrap doc-seam-l" style="width:11.5%;">STOCK NO:</th>
+            <th class="doc-c doc-nowrap doc-seam-r" style="width:10%;">QNTY</th>
+            <th class="doc-c doc-seam-l" style="width:26%;"></th>
+            <th class="doc-c doc-nowrap" style="width:14.5%;">UNIT COST</th>
+            <th class="doc-c doc-nowrap" style="width:9.5%;">TOTAL COST</th>
+            <th class="doc-c doc-nowrap" style="width:14%;">AMOUNT</th>
+        </tr>
+
+                    
+            <tr class="doc-blank">
+                <td class="doc-strip doc-strip-end"></td>
+                <td class="doc-seam-l"></td>
+                <td class="doc-seam-r"></td>
+                <td class="doc-seam-l"></td>
+                <td></td>
+                <td class="doc-seam-r"></td>
+                <td class="doc-seam-l"></td>
+            </tr>
+        
+            </tbody>
+</table>
+                        
+            <table class="doc-grid doc-cert no-top">
+    <tbody>
+        <tr>
+            <td colspan="2" class="doc-cert-statement">I HEREBY CERTIFY TO THE CORRECTNESS OF THE ABOVE INFORMATION</td>
+            <td class="doc-cert-post">Posted By/ Date:</td>
+            <td class="doc-r doc-cert-post">Posted By/ Date:</td>
+        </tr>
+        
+        <tr>
+            <td class="doc-cert-name doc-c" style="width:44.4%;">Supply Office Administrator</td>
+            <td class="doc-cert-divider" style="width:11.6%;"></td>
+            <td style="width:21%;"></td>
+            <td style="width:23%;"></td>
+        </tr>
+        
+        <tr class="doc-cert-gap">
+            <td></td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="doc-c doc-cert-rule">Administrative Officer V</td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td class="doc-c doc-cert-rule">Accounting Clerk</td>
+        </tr>
+    </tbody>
+</table>
+        </div>
+                <div class="doc doc-sheet doc-cover">
+            <div class="doc-org">Isabela State University - Cauayan Campus</div>
+            <h1 class="doc-cover-title">Report of Supplies and Materials Issued</h1>
+            <div class="doc-cover-name">ICS</div>
+            <div class="doc-cover-period">For the period JANUARY 01-31, 2026</div>
+        </div>
+    
+            <div class="doc doc-sheet">
+            
+            <table class="doc-grid doc-head">
+    <tbody>
+        <tr>
+            <td colspan="5" class="doc-c doc-title">Report of Supplies and Materials Issued</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="doc-c doc-org">Isabela State University - Cauayan Campus</td>
+        </tr>
+        <tr>
+            
+            <td colspan="5" class="lbl doc-r"><span class="doc-no-label">NO:</span><span class="doc-sign-line">2026-01-03</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r" style="width:12%;">AGENCY:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">Isabela State University - Cauayan Campus</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r">DATE:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">JANUARY 01-31, 2026</span></td>
+        </tr>
+            </tbody>
+</table>
+            <table class="doc-grid doc-banner doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        <tr>
+            <th colspan="5" class="doc-i">To be filled up in the Supply and Property Unit</th>
+            <th colspan="2" class="doc-i">To be Filled up by Accounting Unit</th>
+        </tr>
+    </thead>
+</table>
+
+<table class="doc-grid doc-items doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            <th style="width:14.5%;">ICS NO.</th>
+            <th style="width:11.5%;">End-User</th>
+            <th style="width:36%;">Item / Description</th>
+            <th style="width:7%;">UNIT</th>
+            <th style="width:7.5%;">QNTY<br>ISSUED</th>
+            <th style="width:9.5%;">UNIT COST</th>
+            <th style="width:14%;">AMOUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00002</td>
+                <td>Angelica Fernandez</td>
+                <td>
+                    <div class="doc-name">Split-Type Air Conditioner 2HP</div>
+                                            <div class="doc-desc">Split-Type Air Conditioner 2HP for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00003</td>
+                <td>Michael Tolentino</td>
+                <td>
+                    <div class="doc-name">Wooden Teacher&#039;s Table</div>
+                                            <div class="doc-desc">Wooden Teacher&#039;s Table for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Dell OptiPlex Desktop Computer</div>
+                                            <div class="doc-desc">Dell OptiPlex Desktop Computer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00026</td>
+                <td>Cristina Bautista</td>
+                <td>
+                    <div class="doc-name">Wireless Microphone Set</div>
+                                            <div class="doc-desc">Wireless Microphone Set for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">HP LaserJet Printer</div>
+                                            <div class="doc-desc">HP LaserJet Printer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Wooden Teacher&#039;s Table</div>
+                                            <div class="doc-desc">Wooden Teacher&#039;s Table for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Dell OptiPlex Desktop Computer</div>
+                                            <div class="doc-desc">Dell OptiPlex Desktop Computer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00027</td>
+                <td>Ricardo Ramos</td>
+                <td>
+                    <div class="doc-name">Epson LCD Projector</div>
+                                            <div class="doc-desc">Epson LCD Projector for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Office Swivel Chair</div>
+                                            <div class="doc-desc">Office Swivel Chair for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+        
+        
+                    
+            <tr class="doc-noline doc-foot">
+                
+                <td class="doc-strip"></td>
+                <td></td>
+                <td colspan="4" class="doc-c doc-fill"></td>
+                <td></td>
+            </tr>
+            </tbody>
+</table>
+                        
+            <table class="doc-grid doc-cert no-top">
+    <tbody>
+        <tr>
+            <td colspan="2" class="doc-cert-statement">I HEREBY CERTIFY TO THE CORRECTNESS OF THE ABOVE INFORMATION</td>
+            <td class="doc-cert-post">Posted By/ Date:</td>
+            <td class="doc-r doc-cert-post">Posted By/ Date:</td>
+        </tr>
+        
+        <tr>
+            <td class="doc-cert-name doc-c" style="width:44.4%;">Supply Office Administrator</td>
+            <td class="doc-cert-divider" style="width:11.6%;"></td>
+            <td style="width:21%;"></td>
+            <td style="width:23%;"></td>
+        </tr>
+        
+        <tr class="doc-cert-gap">
+            <td></td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="doc-c doc-cert-rule">Administrative Officer V</td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td class="doc-c doc-cert-rule">Accounting Clerk</td>
+        </tr>
+    </tbody>
+</table>
+        </div>
+            <div class="doc doc-sheet">
+            
+            <table class="doc-grid doc-head">
+    <tbody>
+        <tr>
+            <td colspan="5" class="doc-c doc-title">Report of Supplies and Materials Issued</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="doc-c doc-org">Isabela State University - Cauayan Campus</td>
+        </tr>
+        <tr>
+            
+            <td colspan="5" class="lbl doc-r"><span class="doc-no-label">NO:</span><span class="doc-sign-line">2026-01-04</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r" style="width:12%;">AGENCY:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">Isabela State University - Cauayan Campus</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r">DATE:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">JANUARY 01-31, 2026</span></td>
+        </tr>
+            </tbody>
+</table>
+            <table class="doc-grid doc-banner doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        <tr>
+            <th colspan="5" class="doc-i">To be filled up in the Supply and Property Unit</th>
+            <th colspan="2" class="doc-i">To be Filled up by Accounting Unit</th>
+        </tr>
+    </thead>
+</table>
+
+<table class="doc-grid doc-items doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            <th style="width:14.5%;">ICS NO.</th>
+            <th style="width:11.5%;">End-User</th>
+            <th style="width:36%;">Item / Description</th>
+            <th style="width:7%;">UNIT</th>
+            <th style="width:7.5%;">QNTY<br>ISSUED</th>
+            <th style="width:9.5%;">UNIT COST</th>
+            <th style="width:14%;">AMOUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00027</td>
+                <td>Ricardo Ramos</td>
+                <td>
+                    <div class="doc-name">Wireless Microphone Set</div>
+                                            <div class="doc-desc">Wireless Microphone Set for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">HP LaserJet Printer</div>
+                                            <div class="doc-desc">HP LaserJet Printer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Wooden Teacher&#039;s Table</div>
+                                            <div class="doc-desc">Wooden Teacher&#039;s Table for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00050</td>
+                <td>Angelica Fernandez</td>
+                <td>
+                    <div class="doc-name">Split-Type Air Conditioner 2HP</div>
+                                            <div class="doc-desc">Split-Type Air Conditioner 2HP for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Whiteboard 4x8ft</div>
+                                            <div class="doc-desc">Whiteboard 4x8ft for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Epson LCD Projector</div>
+                                            <div class="doc-desc">Epson LCD Projector for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00051</td>
+                <td>Michael Tolentino</td>
+                <td>
+                    <div class="doc-name">Wooden Teacher&#039;s Table</div>
+                                            <div class="doc-desc">Wooden Teacher&#039;s Table for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Dell OptiPlex Desktop Computer</div>
+                                            <div class="doc-desc">Dell OptiPlex Desktop Computer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Split-Type Air Conditioner 2HP</div>
+                                            <div class="doc-desc">Split-Type Air Conditioner 2HP for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+        
+        
+                    
+            <tr class="doc-noline doc-foot">
+                
+                <td class="doc-strip"></td>
+                <td></td>
+                <td colspan="4" class="doc-c doc-fill"></td>
+                <td></td>
+            </tr>
+            </tbody>
+</table>
+                        
+            <table class="doc-grid doc-cert no-top">
+    <tbody>
+        <tr>
+            <td colspan="2" class="doc-cert-statement">I HEREBY CERTIFY TO THE CORRECTNESS OF THE ABOVE INFORMATION</td>
+            <td class="doc-cert-post">Posted By/ Date:</td>
+            <td class="doc-r doc-cert-post">Posted By/ Date:</td>
+        </tr>
+        
+        <tr>
+            <td class="doc-cert-name doc-c" style="width:44.4%;">Supply Office Administrator</td>
+            <td class="doc-cert-divider" style="width:11.6%;"></td>
+            <td style="width:21%;"></td>
+            <td style="width:23%;"></td>
+        </tr>
+        
+        <tr class="doc-cert-gap">
+            <td></td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="doc-c doc-cert-rule">Administrative Officer V</td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td class="doc-c doc-cert-rule">Accounting Clerk</td>
+        </tr>
+    </tbody>
+</table>
+        </div>
+            <div class="doc doc-sheet">
+            
+            <table class="doc-grid doc-head">
+    <tbody>
+        <tr>
+            <td colspan="5" class="doc-c doc-title">Report of Supplies and Materials Issued</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="doc-c doc-org">Isabela State University - Cauayan Campus</td>
+        </tr>
+        <tr>
+            
+            <td colspan="5" class="lbl doc-r"><span class="doc-no-label">NO:</span><span class="doc-sign-line">2026-01-05</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r" style="width:12%;">AGENCY:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">Isabela State University - Cauayan Campus</span></td>
+        </tr>
+        <tr>
+            <th class="lbl doc-r">DATE:</th>
+            <td colspan="4" class="doc-l doc-b doc-nowrap"><span class="doc-head-line">JANUARY 01-31, 2026</span></td>
+        </tr>
+            </tbody>
+</table>
+            <table class="doc-grid doc-banner doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        <tr>
+            <th colspan="5" class="doc-i">To be filled up in the Supply and Property Unit</th>
+            <th colspan="2" class="doc-i">To be Filled up by Accounting Unit</th>
+        </tr>
+    </thead>
+</table>
+
+<table class="doc-grid doc-items doc-fixed no-top">
+    <thead>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:36%;"></td>
+                            <td style="width:7%;"></td>
+                            <td style="width:7.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            <th style="width:14.5%;">ICS NO.</th>
+            <th style="width:11.5%;">End-User</th>
+            <th style="width:36%;">Item / Description</th>
+            <th style="width:7%;">UNIT</th>
+            <th style="width:7.5%;">QNTY<br>ISSUED</th>
+            <th style="width:9.5%;">UNIT COST</th>
+            <th style="width:14%;">AMOUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00051</td>
+                <td>Michael Tolentino</td>
+                <td>
+                    <div class="doc-name">Whiteboard 4x8ft</div>
+                                            <div class="doc-desc">Whiteboard 4x8ft for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00052</td>
+                <td>Cristina Bautista</td>
+                <td>
+                    <div class="doc-name">Wireless Microphone Set</div>
+                                            <div class="doc-desc">Wireless Microphone Set for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">HP LaserJet Printer</div>
+                                            <div class="doc-desc">HP LaserJet Printer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Wooden Teacher&#039;s Table</div>
+                                            <div class="doc-desc">Wooden Teacher&#039;s Table for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Dell OptiPlex Desktop Computer</div>
+                                            <div class="doc-desc">Dell OptiPlex Desktop Computer for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Split-Type Air Conditioner 2HP</div>
+                                            <div class="doc-desc">Split-Type Air Conditioner 2HP for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap">ICS-2026-00053</td>
+                <td>Ricardo Ramos</td>
+                <td>
+                    <div class="doc-name">Epson LCD Projector</div>
+                                            <div class="doc-desc">Epson LCD Projector for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Office Swivel Chair</div>
+                                            <div class="doc-desc">Office Swivel Chair for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+                                <tr class="doc-noline">
+                
+                <td class="doc-nowrap"></td>
+                <td></td>
+                <td>
+                    <div class="doc-name">Wireless Microphone Set</div>
+                                            <div class="doc-desc">Wireless Microphone Set for classroom/laboratory use.</div>
+                                    </td>
+                <td class="doc-c">unit</td>
+                <td class="doc-c">1</td>
+                <td class="doc-r"></td>
+                <td class="doc-r"></td>
+            </tr>
+        
+        
+                    
+            <tr class="doc-noline doc-foot">
+                
+                <td class="doc-strip"></td>
+                <td></td>
+                <td colspan="4" class="doc-c doc-fill">**************************Nothing Follows**************************</td>
+                <td></td>
+            </tr>
+            </tbody>
+</table>
+                            <table class="doc-grid doc-recap doc-fixed no-top doc-keep">
+    <tbody>
+        
+        <tr class="doc-measure">
+                            <td style="width:14.5%;"></td>
+                            <td style="width:11.5%;"></td>
+                            <td style="width:10%;"></td>
+                            <td style="width:26%;"></td>
+                            <td style="width:14.5%;"></td>
+                            <td style="width:9.5%;"></td>
+                            <td style="width:14%;"></td>
+                    </tr>
+        
+        <tr>
+            
+            <td class="doc-strip"></td>
+            <td colspan="3" class="band doc-seam-l doc-seam-r"><div class="band-issue">Recapitulation</div></td>
+            <td class="band doc-seam-l"><div class="band-cost">Recapitulation</div></td>
+            <td colspan="2" class="band"></td>
+        </tr>
+        <tr>
+            <th class="doc-c doc-strip" style="width:14.5%;"></th>
+            <th class="doc-c doc-nowrap doc-seam-l" style="width:11.5%;">STOCK NO:</th>
+            <th class="doc-c doc-nowrap doc-seam-r" style="width:10%;">QNTY</th>
+            <th class="doc-c doc-seam-l" style="width:26%;"></th>
+            <th class="doc-c doc-nowrap" style="width:14.5%;">UNIT COST</th>
+            <th class="doc-c doc-nowrap" style="width:9.5%;">TOTAL COST</th>
+            <th class="doc-c doc-nowrap" style="width:14%;">AMOUNT</th>
+        </tr>
+
+                    
+            <tr class="doc-blank">
+                <td class="doc-strip doc-strip-end"></td>
+                <td class="doc-seam-l"></td>
+                <td class="doc-seam-r"></td>
+                <td class="doc-seam-l"></td>
+                <td></td>
+                <td class="doc-seam-r"></td>
+                <td class="doc-seam-l"></td>
+            </tr>
+        
+            </tbody>
+</table>
+                        
+            <table class="doc-grid doc-cert no-top">
+    <tbody>
+        <tr>
+            <td colspan="2" class="doc-cert-statement">I HEREBY CERTIFY TO THE CORRECTNESS OF THE ABOVE INFORMATION</td>
+            <td class="doc-cert-post">Posted By/ Date:</td>
+            <td class="doc-r doc-cert-post">Posted By/ Date:</td>
+        </tr>
+        
+        <tr>
+            <td class="doc-cert-name doc-c" style="width:44.4%;">Supply Office Administrator</td>
+            <td class="doc-cert-divider" style="width:11.6%;"></td>
+            <td style="width:21%;"></td>
+            <td style="width:23%;"></td>
+        </tr>
+        
+        <tr class="doc-cert-gap">
+            <td></td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="doc-c doc-cert-rule">Administrative Officer V</td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td class="doc-c doc-cert-rule">Accounting Clerk</td>
+        </tr>
+    </tbody>
+</table>
+        </div>
+        </div>
+
+    </body>
+</html>

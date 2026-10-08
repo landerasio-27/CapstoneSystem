@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<!--
+  Advertises the ISU supply management Laravel server on the local network so
+  the Flutter app can find it automatically (mDNS/Bonjour service
+  "_isu-supply._tcp.local"). Installed to /etc/avahi/services/ by
+  deploy/setup-mdns.sh — edit the PORT below to match how the Pi serves the
+  app (8000 = `php artisan serve`, 80 = Nginx/Apache).
+-->
+<service-group>
+  <name replace-wildcards="yes">ISU Supply Server on %h</name>
+  <service>
+    <type>_isu-supply._tcp</type>
+    <port>8000</port>
+    <txt-record>service=ISU Supply Management</txt-record>
+    <txt-record>service_key=isu-supply</txt-record>
+    <txt-record>version=1.0</txt-record>
+    <txt-record>api=/api</txt-record>
+  </service>
+</service-group>

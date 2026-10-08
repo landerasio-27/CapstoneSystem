@@ -1,0 +1,609 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* ISU brand green — primary anchored at #006400 (dark green).
+       Light tints (50–500) stay muted for backgrounds/accents; the prominent
+       greens used for buttons, links, headers and active states are #006400. */
+    --color-brand-50: #e6f2e6;
+    --color-brand-100: #c2e0c2;
+    --color-brand-200: #9bcc9b;
+    --color-brand-300: #6fb56f;
+    --color-brand-400: #3f9a3f;
+    --color-brand-500: #1f831f;
+    --color-brand-600: #006400;
+    --color-brand-700: #006400;
+    --color-brand-800: #006400;
+    --color-brand-900: #004d00;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ============================================================================
+   LOADING STATES  (reusable overlay + in-button spinner)
+   window.showLoading(msg) / window.hideLoading() toggle the full-page overlay.
+   ============================================================================ */
+.app-loading {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+.app-loading.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+.app-loading-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 26px 34px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+.app-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 3.5px solid rgba(46, 125, 50, 0.2);
+    border-top-color: #2e7d32;
+    animation: app-spin 0.7s linear infinite;
+}
+.app-loading-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Small spinner for inside buttons (e.g. "Signing in…"). */
+.app-btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: -3px;
+    margin-right: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #ffffff;
+    border-radius: 9999px;
+    animation: app-spin 0.7s linear infinite;
+}
+
+@keyframes app-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Dark mode: dark card + brighter green spinner. */
+:root[data-theme='dark'] .app-loading-card {
+    background: #1e1e1e;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+:root[data-theme='dark'] .app-loading-text {
+    color: #e5e7eb;
+}
+:root[data-theme='dark'] .app-loading-spinner {
+    border-color: rgba(76, 175, 80, 0.25);
+    border-top-color: #4caf50;
+}
+
+/* ============================================================================
+   GREEN TOP HEADER (light mode only)
+   The admin top bar uses the brand green in light mode. In dark mode the header
+   keeps its dark surface (handled by the dark-mode block below), so these rules
+   are scoped to :not([data-theme="dark"]) — i.e. light or the pre-JS default.
+   Inner text/icons are forced readable (white / translucent white) on green.
+   ============================================================================ */
+
+/* Sidebar logo: transparent artwork sitting directly on the header surface —
+   no white disc behind it. A soft drop shadow keeps the seal legible in dark
+   mode, where the artwork's dark outlines would otherwise blend into the
+   background. */
+.app-sidebar-logo {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+    border-radius: 9999px; /* clip the square PNG's bounding box to the seal */
+}
+:root:not([data-theme='dark']) .app-header,
+:root:not([data-theme='dark']) .app-sidebar-head {
+    background-color: #006400; /* dark green */
+    border-color: rgba(255, 255, 255, 0.18);
+}
+:root:not([data-theme='dark']) .app-sidebar-head .text-slate-800 {
+    color: #ffffff;
+}
+:root:not([data-theme='dark']) .app-sidebar-head .text-slate-400 {
+    color: rgba(255, 255, 255, 0.8);
+}
+:root:not([data-theme='dark']) .app-header .text-slate-800,
+:root:not([data-theme='dark']) .app-header .text-slate-700,
+:root:not([data-theme='dark']) .app-header .text-slate-600,
+:root:not([data-theme='dark']) .app-header .text-slate-500 {
+    color: #ffffff;
+}
+:root:not([data-theme='dark']) .app-header .text-slate-400 {
+    color: rgba(255, 255, 255, 0.8);
+}
+:root:not([data-theme='dark']) .app-header .border-slate-200 {
+    border-color: rgba(255, 255, 255, 0.45);
+}
+:root:not([data-theme='dark']) .app-header .hover\:bg-slate-100:hover,
+:root:not([data-theme='dark']) .app-header .hover\:bg-red-50:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+:root:not([data-theme='dark']) .app-header .hover\:text-slate-700:hover,
+:root:not([data-theme='dark']) .app-header .hover\:text-slate-800:hover,
+:root:not([data-theme='dark']) .app-header .hover\:text-red-600:hover {
+    color: #ffffff;
+}
+:root:not([data-theme='dark']) .app-header .hover\:border-red-200:hover {
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+/* The account menu hangs off the green bar but is a light popover, not part of
+   the bar's own chrome: without this it would be caught by the white-text
+   remapping above and come out white on white — an empty-looking panel. Its
+   rows therefore state their own colours, with the icon a shade lighter and a
+   red hover on the way out. */
+:root:not([data-theme='dark']) .app-header #user-menu-panel,
+:root:not([data-theme='dark']) .app-header #user-menu-panel a,
+:root:not([data-theme='dark']) .app-header #user-menu-panel button {
+    color: #0f172a;
+}
+:root:not([data-theme='dark']) .app-header #user-menu-panel svg {
+    color: #64748b;
+}
+:root:not([data-theme='dark']) .app-header #user-menu-panel a:hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+:root:not([data-theme='dark']) .app-header #user-menu-panel button:hover {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+:root:not([data-theme='dark']) .app-header #user-menu-panel button:hover svg {
+    color: #dc2626;
+}
+
+/* ============================================================================
+   DARK MODE
+   Applied when <html data-theme="dark"> (set by the inline no-flash script in
+   the admin layout). Rather than touching every Blade, we remap the handful of
+   Tailwind slate/white utility classes the UI is built from, plus the soft
+   status colours. Brand green is intentionally preserved in both themes.
+   Printable documents (PAR/IAR/ICS/RIS, QR labels, PDF/report views) are
+   standalone pages with no data-theme attribute, so they always stay light.
+   ============================================================================ */
+
+html[data-theme='dark'] {
+    color-scheme: dark;
+    accent-color: #4caf50;
+}
+
+/* --- Surfaces ------------------------------------------------------------- */
+html[data-theme='dark'] .bg-white { background-color: #1e1e1e; }
+html[data-theme='dark'] .bg-white\/90 { background-color: rgba(30, 30, 30, 0.9); }
+html[data-theme='dark'] .bg-slate-50 { background-color: #121212; }
+html[data-theme='dark'] .bg-slate-100 { background-color: #242424; }
+html[data-theme='dark'] .bg-slate-800 { background-color: #0a0a0a; }
+html[data-theme='dark'] .hover\:bg-slate-50:hover { background-color: #242424; }
+html[data-theme='dark'] .hover\:bg-slate-100:hover { background-color: #2a2a2a; }
+html[data-theme='dark'] .group:hover .group-hover\:bg-white { background-color: #242424; }
+
+/* --- Text ---------------------------------------------------------------- */
+html[data-theme='dark'] .text-slate-900 { color: #f3f4f6; }
+html[data-theme='dark'] .text-slate-800 { color: #e5e7eb; }
+html[data-theme='dark'] .text-slate-700 { color: #d1d5db; }
+html[data-theme='dark'] .text-slate-600 { color: #9ca3af; }
+html[data-theme='dark'] .text-slate-500 { color: #9ca3af; }
+html[data-theme='dark'] .text-slate-400 { color: #6b7280; }
+html[data-theme='dark'] .hover\:text-slate-900:hover { color: #f3f4f6; }
+html[data-theme='dark'] .hover\:text-slate-700:hover { color: #d1d5db; }
+html[data-theme='dark'] .group:hover .group-hover\:text-slate-600 { color: #9ca3af; }
+
+/* --- Borders / rings / dividers ------------------------------------------ */
+html[data-theme='dark'] .border-slate-300 { border-color: #2e2e2e; }
+html[data-theme='dark'] .border-slate-200 { border-color: #2e2e2e; }
+html[data-theme='dark'] .border-slate-100 { border-color: #262626; }
+html[data-theme='dark'] .ring-slate-200 { --tw-ring-color: #2e2e2e; }
+html[data-theme='dark'] .ring-white { --tw-ring-color: #1e1e1e; }
+html[data-theme='dark'] .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: #262626; }
+html[data-theme='dark'] .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: #2e2e2e; }
+
+/* --- Cards: subtle outline instead of a shadow that's invisible on dark --- */
+html[data-theme='dark'] .shadow-sm { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06); }
+html[data-theme='dark'] .shadow-md { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55); }
+html[data-theme='dark'] .shadow-lg { box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6); }
+html[data-theme='dark'] .shadow-xl { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65); }
+
+/* --- Form controls (safety net for inputs without explicit bg classes) ---- */
+html[data-theme='dark'] input:not([type='checkbox']):not([type='radio']),
+html[data-theme='dark'] textarea,
+html[data-theme='dark'] select {
+    background-color: #1e1e1e;
+    color: #e5e7eb;
+    border-color: #2e2e2e;
+}
+html[data-theme='dark'] input::placeholder,
+html[data-theme='dark'] textarea::placeholder { color: #6b7280; }
+
+/* --- Soft status colours: keep the hue, darken the fill, lighten the text -- */
+html[data-theme='dark'] .bg-brand-50,
+html[data-theme='dark'] .bg-brand-50\/40 { background-color: rgba(76, 175, 80, 0.15); }
+html[data-theme='dark'] .text-brand-800 { color: #a5d6a7; }
+html[data-theme='dark'] .text-brand-700 { color: #81c784; }
+html[data-theme='dark'] .text-brand-600 { color: #81c784; }
+html[data-theme='dark'] .border-brand-200 { border-color: rgba(76, 175, 80, 0.35); }
+html[data-theme='dark'] .group:hover .group-hover\:text-brand-700 { color: #81c784; }
+
+html[data-theme='dark'] .bg-red-50,
+html[data-theme='dark'] .bg-red-50\/50,
+html[data-theme='dark'] .bg-red-50\/40 { background-color: rgba(248, 113, 113, 0.15); }
+html[data-theme='dark'] .hover\:bg-red-50:hover { background-color: rgba(248, 113, 113, 0.18); }
+html[data-theme='dark'] .text-red-700 { color: #f87171; }
+html[data-theme='dark'] .text-red-600 { color: #f87171; }
+html[data-theme='dark'] .text-red-500 { color: #f87171; }
+html[data-theme='dark'] .border-red-300 { border-color: rgba(248, 113, 113, 0.45); }
+html[data-theme='dark'] .border-red-200 { border-color: rgba(248, 113, 113, 0.35); }
+html[data-theme='dark'] .hover\:border-red-200:hover { border-color: rgba(248, 113, 113, 0.45); }
+
+html[data-theme='dark'] .bg-amber-50 { background-color: rgba(251, 191, 36, 0.15); }
+html[data-theme='dark'] .text-amber-700 { color: #fbbf24; }
+html[data-theme='dark'] .text-amber-600 { color: #fbbf24; }
+
+html[data-theme='dark'] .bg-sky-50 { background-color: rgba(56, 189, 248, 0.15); }
+html[data-theme='dark'] .text-sky-700 { color: #38bdf8; }
+html[data-theme='dark'] .text-sky-600 { color: #38bdf8; }
+
+html[data-theme='dark'] .bg-orange-50 { background-color: rgba(251, 146, 60, 0.15); }
+html[data-theme='dark'] .text-orange-700 { color: #fb923c; }
+html[data-theme='dark'] .text-orange-600 { color: #fb923c; }
+
+html[data-theme='dark'] .bg-indigo-50 { background-color: rgba(129, 140, 248, 0.15); }
+html[data-theme='dark'] .text-indigo-600 { color: #a5b4fc; }
+
+/* --- Theme toggle: show only the icon for the current mode ---------------- */
+.theme-ico-light,
+.theme-ico-dark,
+.theme-ico-system { display: none; }
+html[data-theme-mode='light'] .theme-ico-light { display: block; }
+html[data-theme-mode='dark'] .theme-ico-dark { display: block; }
+html[data-theme-mode='system'] .theme-ico-system { display: block; }
+html:not([data-theme-mode]) .theme-ico-system { display: block; } /* pre-JS fallback */
+
+/* ============================================================================
+   CHART PRIMITIVES
+   Server-rendered SVG line charts and CSS bar charts (no chart library, so the
+   dashboard also works offline). Colours are defined here once and mirrored for
+   dark mode, exactly like the rest of the admin theme.
+   ============================================================================ */
+.chart-grid { stroke: #e2e8f0; stroke-width: 1px; }
+.chart-axis { stroke: #cbd5e1; stroke-width: 1px; }
+.chart-line { fill: none; stroke: #006400; stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
+.chart-point { fill: #006400; stroke: #ffffff; stroke-width: 2; }
+
+/* An SVG scales as a whole, so text drawn in viewBox units shrinks with the card
+   it sits in. These sizes (in viewBox units) keep the labels readable in the
+   widest and the narrowest case; the strokes stay pixel-accurate thanks to
+   vector-effect="non-scaling-stroke" on the lines. */
+.chart-axis-label { fill: #64748b; font-size: 24px; }
+.chart-axis-label-muted { fill: #cbd5e1; font-size: 24px; }
+.chart-value-label { fill: #334155; font-size: 24px; font-weight: 600; }
+
+@media (min-width: 640px) {
+    .chart-axis-label, .chart-axis-label-muted, .chart-value-label { font-size: 14px; }
+}
+
+@media (min-width: 1280px) {
+    .chart-axis-label, .chart-axis-label-muted, .chart-value-label { font-size: 11px; }
+    /* Two charts side by side get roughly half the width, so their units grow. */
+    .chart-compact .chart-axis-label,
+    .chart-compact .chart-axis-label-muted,
+    .chart-compact .chart-value-label { font-size: 22px; }
+}
+.chart-gap { fill: #cbd5e1; }
+.chart-track { background-color: #f1f5f9; }
+
+html[data-theme='dark'] .chart-grid { stroke: #2a2a2a; }
+html[data-theme='dark'] .chart-axis { stroke: #333333; }
+html[data-theme='dark'] .chart-axis-label { fill: #9ca3af; }
+html[data-theme='dark'] .chart-axis-label-muted { fill: #4b5563; }
+html[data-theme='dark'] .chart-value-label { fill: #e5e7eb; }
+html[data-theme='dark'] .chart-line { stroke: #4caf50; }
+html[data-theme='dark'] .chart-point { fill: #4caf50; stroke: #1e1e1e; }
+html[data-theme='dark'] .chart-gap { fill: #4b5563; }
+html[data-theme='dark'] .chart-track { background-color: #2a2a2a; }
+/* Healthy stock bars/dots are the only users of bg-brand-600. The brand green is
+   too dark to read on the dark card surface, so charts brighten it (the same way
+   the dark theme already brightens text-brand-700). */
+html[data-theme='dark'] .bg-brand-600 { background-color: #4caf50; }
+
+/* Printing from a dark admin page should still use ink-friendly light colours. */
+@media print {
+    html[data-theme='dark'] body { background: #fff; color: #000; }
+}
+
+/* ============================================================================
+   CARDS — the official Stock Card / Property Card sheet
+   The same markup is rendered on screen here and inside the PDF/print views,
+   so these class names are also defined in resources/views/admin/cards/
+   _print_styles.blade.php (dompdf does not load this bundle, and cannot be
+   relied on for CSS custom properties). Keep the two in step.
+   ============================================================================ */
+.sheet {
+    color: #0f172a;
+    font-size: 13px;
+}
+.sheet-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-align: center;
+    text-transform: uppercase;
+}
+.sheet-subtitle {
+    margin-top: 2px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+.sheet-meta {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    font-size: 12.5px;
+}
+.sheet-meta th,
+.sheet-meta td {
+    border: 1px solid #cbd5e1;
+    padding: 7px 9px;
+    text-align: left;
+    vertical-align: top;
+    font-weight: 400;
+}
+.sheet-meta th {
+    width: 15%;
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 500;
+}
+.sheet-meta .sheet-value {
+    font-weight: 600;
+}
+.sheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 12.5px;
+}
+.sheet-table th,
+.sheet-table td {
+    border: 1px solid #cbd5e1;
+    padding: 6px 8px;
+    vertical-align: top;
+}
+.sheet-table thead th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    text-align: center;
+    font-size: 11.5px;
+    line-height: 1.25;
+}
+.sheet-table tbody td {
+    color: #1e293b;
+}
+.sheet-table .sheet-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.sheet-table .sheet-center {
+    text-align: center;
+}
+.sheet-table .sheet-in {
+    color: #15803d;
+    font-weight: 600;
+}
+.sheet-table .sheet-out {
+    color: #b91c1c;
+    font-weight: 600;
+}
+.sheet-empty-row td {
+    height: 26px;
+    color: #94a3b8;
+}
+html[data-theme='dark'] .sheet { color: #e5e7eb; }
+html[data-theme='dark'] .sheet-subtitle { color: #9ca3af; }
+html[data-theme='dark'] .sheet-meta th,
+html[data-theme='dark'] .sheet-meta td,
+html[data-theme='dark'] .sheet-table th,
+html[data-theme='dark'] .sheet-table td { border-color: #475569; }
+html[data-theme='dark'] .sheet-meta th,
+html[data-theme='dark'] .sheet-table thead th { background: #242424; color: #cbd5e1; }
+html[data-theme='dark'] .sheet-table tbody td { color: #e5e7eb; }
+html[data-theme='dark'] .sheet-table .sheet-in { color: #6ee7a8; }
+html[data-theme='dark'] .sheet-table .sheet-out { color: #fca5a5; }
+html[data-theme='dark'] .sheet-empty-row td { color: #6b7280; }
+
+/* ---------- Searchable selects (documents item picker, card forms) ----------
+   Clicking the control opens one dropdown that looks like the native picker —
+   with the search built into its top. The real <select> stays the form field. */
+.isu-ss { position: relative; }
+.isu-ss select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+.isu-ss-trigger {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; box-sizing: border-box; min-height: 38px; padding: 8px 12px;
+    background: #fff; border: 1px solid #d5dcd8; border-radius: 8px;
+    font-size: 13px; color: inherit; font-family: inherit; text-align: left; cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.isu-ss-trigger:hover { border-color: #c6d0ca; }
+.isu-ss-trigger:focus-visible { outline: none; border-color: var(--color-brand-500, #087a16); box-shadow: 0 0 0 3px rgba(8,122,22,.13); }
+.isu-ss-trigger.is-placeholder .isu-ss-value { color: #6b7280; }
+.isu-ss-caret { flex: none; color: #6b7280; transition: transform .15s ease; }
+.isu-ss.is-open .isu-ss-caret { transform: rotate(180deg); }
+
+.isu-ss-pop {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 40;
+    background: #fff; border: 1px solid #e2e8e4; border-radius: 10px;
+    box-shadow: 0 12px 32px -12px rgba(16,24,40,.25); overflow: hidden;
+    display: none;
+}
+.isu-ss.is-open .isu-ss-pop { display: block; }
+.isu-ss-pop.open-up { top: auto; bottom: calc(100% + 6px); }
+
+.isu-ss-search {
+    width: 100%; box-sizing: border-box; height: 38px; padding: 0 12px 0 34px;
+    border: 0; border-bottom: 1px solid #edf1ee; background: #fff;
+    font-size: 13px; color: inherit; font-family: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 12px center;
+}
+.isu-ss-search:focus { outline: none; }
+
+.isu-ss-list { max-height: 260px; overflow-y: auto; padding: 4px; }
+.isu-ss-group {
+    padding: 8px 10px 4px; font-size: 11px; font-weight: 700;
+    letter-spacing: .4px; text-transform: uppercase; color: #94a3b8;
+}
+.isu-ss-row {
+    display: block; width: 100%; box-sizing: border-box; padding: 8px 10px;
+    border: 0; border-radius: 6px; background: none; cursor: pointer;
+    font-size: 13.5px; color: inherit; font-family: inherit; text-align: left;
+}
+.isu-ss-row:hover, .isu-ss-row.is-active { background: #f1f5f2; }
+.isu-ss-row.is-selected { background: #e7f2ea; font-weight: 600; }
+.isu-ss-row.is-selected.is-active { background: #dcebe1; }
+.isu-ss-empty { padding: 10px 12px 12px; font-size: 12.5px; color: #94a3b8; }
+
+html[data-theme='dark'] .isu-ss-trigger { background: #161d1a; border-color: #33403a; }
+html[data-theme='dark'] .isu-ss-trigger:hover { border-color: #3d4b44; }
+html[data-theme='dark'] .isu-ss-trigger.is-placeholder .isu-ss-value { color: #9ca3af; }
+html[data-theme='dark'] .isu-ss-pop { background: #141b18; border-color: #2a352f; box-shadow: 0 12px 32px -12px rgba(0,0,0,.6); }
+html[data-theme='dark'] .isu-ss-search { background-color: #141b18; border-color: #26302b; color: #e5e7eb; }
+html[data-theme='dark'] .isu-ss-group { color: #6b7a72; }
+html[data-theme='dark'] .isu-ss-row:hover, html[data-theme='dark'] .isu-ss-row.is-active { background: #1d2621; }
+html[data-theme='dark'] .isu-ss-row.is-selected { background: #1c2b22; }
+html[data-theme='dark'] .isu-ss-row.is-selected.is-active { background: #233529; }
+html[data-theme='dark'] .isu-ss-empty { color: #6b7a72; }
+
+/* ============================================================================
+   SIDEBAR NAVIGATION (sections, rail mode, tooltips)
+   Behaviour lives in resources/js/sidebar.js; these rules carry the layout.
+   The rail is desktop-only (>= lg) so mobile keeps the full drawer.
+   ============================================================================ */
+
+/* The sections are steady: a heading with its items under it, always drawn.
+   The heading is a label, not a control, so it carries no hover state. */
+.nav-section-heading { cursor: default; }
+
+/* The sidebar's own scroll area scrolls down and nothing else. Anything wider
+   than the rail — a label that has not been hidden yet — would otherwise give
+   the sidebar a horizontal scrollbar along its bottom, and `overflow-y: auto`
+   alone is enough to turn a visible `overflow-x` into an auto one. */
+#app-nav { overflow-x: hidden; }
+
+/* Icon rail: hide every label, shrink paddings, center the icons.
+   The collapse button is deliberately kept visible — it is the only way
+   back to the expanded sidebar. */
+@media (min-width: 1024px) {
+    #sidebar.nav-rail { width: 4.5rem; }
+    body.nav-rail-page > div { margin-left: 4.5rem; }
+
+    #sidebar.nav-rail .nav-label,
+    #sidebar.nav-rail .nav-label-wrap { display: none; }
+
+    /* Rail header: seal centered on top, expand button below it. */
+    #sidebar.nav-rail .app-sidebar-head {
+        flex-direction: column;
+        height: auto;
+        padding: 12px 8px;
+        gap: 6px;
+    }
+    #sidebar.nav-rail .nav-collapse-btn {
+        margin-left: 0;
+        display: block;
+    }
+
+    /* With the names hidden, the heading leaves no row of its own: the
+       groups are told apart by a hairline divider instead. */
+    #sidebar.nav-rail .nav-section-heading { display: none; }
+    #sidebar.nav-rail .nav-link { justify-content: center; padding-left: 0; padding-right: 0; }
+    #sidebar.nav-rail .nav-search-wrap { display: none; }
+
+    #sidebar.nav-rail .nav-group { margin-bottom: 0.75rem; }
+    #sidebar.nav-rail .nav-group + .nav-group {
+        border-top: 1px solid rgb(241 245 249);
+        padding-top: 0.5rem;
+    }
+    html[data-theme='dark'] #sidebar.nav-rail .nav-group + .nav-group { border-top-color: #2a2a2a; }
+
+    /* With the names hidden, each link falls back to the title it already
+       carries, which the browser draws outside this scroll area. A styled
+       tooltip here cannot do that: an absolutely positioned label still counts
+       as the rail's own overflow, which is what left the sidebar with a
+       scrollbar along its bottom instead of an explanation on hover. */
+    /* The star button has no room in the rail; hide it with the labels. */
+    #sidebar.nav-rail .nav-star { display: none; }
+}
+
+/* Keep the active item's trailing star visible on hover only in expanded mode. */
+.nav-link .nav-star { opacity: 0; }
+.nav-link:hover .nav-star,
+.nav-link .nav-star:focus-visible { opacity: 1; }
+.nav-link .nav-star.fill-current { opacity: 1; }
+
+/* Search result rows: keyboard highlight mirrors hover. */
+#nav-search-results a[data-search-index] { cursor: pointer; }
+
+/*
+ * Auto-submitting filter bars (form[data-auto-filter]). The row dims the
+ * moment it submits so it is obvious the list is being reloaded, and the
+ * fields share one line: they only wrap when the viewport is too narrow for
+ * them all.
+ */
+form[data-auto-filter] {
+    transition: opacity 120ms ease-in-out;
+}
+
+/*
+ * A filter row that is asked to stay on the one line with every filter in
+ * sight (the documents register). Its fields are already a size down and share
+ * the row between them; this is the last resort for a window too narrow even
+ * for that, where the row scrolls sideways rather than hiding a filter off the
+ * end of it. The bar is drawn thin and low-contrast so the row still reads as a
+ * single line, and it stays out of the way until the row is pointed at.
+ */
+.filter-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+.filter-scroll::-webkit-scrollbar { height: 6px; }
+.filter-scroll::-webkit-scrollbar-track { background: transparent; }
+.filter-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.45);
+    border-radius: 9999px;
+}
+.filter-scroll:hover::-webkit-scrollbar-thumb { background-color: rgba(148, 163, 184, 0.7); }
+html[data-theme='dark'] .filter-scroll { scrollbar-color: rgba(107, 122, 114, 0.6) transparent; }
+html[data-theme='dark'] .filter-scroll::-webkit-scrollbar-thumb { background-color: rgba(107, 122, 114, 0.6); }
+
+form[data-auto-filter].is-filtering {
+    opacity: 0.55;
+    pointer-events: none;
+}

@@ -1,0 +1,17 @@
+{
+    "name": "ISU Supply Management System",
+    "short_name": "ISU Supply",
+    "description": "Isabela State University — Cauayan Campus Supply Management admin portal.",
+    "id": "/admin",
+    "start_url": "/admin/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#ffffff",
+    "theme_color": "#006400",
+    "icons": [
+        { "src": "/images/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/images/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/images/pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+}

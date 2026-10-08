@@ -1,0 +1,1623 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ICS — Inventory Custodian Slip &mdash; ISU Cauayan Supply Management</title>
+
+    
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#006400">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ISU Supply">
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/pwa-192.png">
+
+    
+    <script>
+        (function () {
+            function systemDark() {
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            function effective(mode) {
+                return mode === 'system' ? (systemDark() ? 'dark' : 'light') : mode;
+            }
+            function apply(mode) {
+                var root = document.documentElement;
+                root.setAttribute('data-theme', effective(mode));
+                root.setAttribute('data-theme-mode', mode);
+            }
+            var stored;
+            try { stored = localStorage.getItem('theme'); } catch (e) {}
+            if (stored !== 'light' && stored !== 'dark' && stored !== 'system') stored = 'system';
+            apply(stored);
+
+            window.__themeCycle = function () {
+                var cur = 'system';
+                try { cur = localStorage.getItem('theme') || 'system'; } catch (e) {}
+                var next = cur === 'light' ? 'dark' : (cur === 'dark' ? 'system' : 'light');
+                try { localStorage.setItem('theme', next); } catch (e) {}
+                apply(next);
+            };
+
+            // Track OS changes while following the system setting.
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+                    var m = 'system';
+                    try { m = localStorage.getItem('theme') || 'system'; } catch (e) {}
+                    if (m === 'system') apply('system');
+                });
+            }
+        })();
+    </script>
+
+    <link rel="preload" as="style" href="http://127.0.0.1:8000/build/assets/app-DMVk35zD.css" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8000/build/assets/app-BvRk9kiK.js" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8000/build/assets/searchable-select-DnMILP2C.js" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8000/build/assets/sidebar-B19jTFK0.js" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8000/build/assets/filter-bar-6fnV_Jni.js" /><link rel="stylesheet" href="http://127.0.0.1:8000/build/assets/app-DMVk35zD.css" /><script type="module" src="http://127.0.0.1:8000/build/assets/app-BvRk9kiK.js"></script><script type="module" src="http://127.0.0.1:8000/build/assets/searchable-select-DnMILP2C.js"></script><script type="module" src="http://127.0.0.1:8000/build/assets/sidebar-B19jTFK0.js"></script><script type="module" src="http://127.0.0.1:8000/build/assets/filter-bar-6fnV_Jni.js"></script>    <style>
+        /* Thin, subtle scrollbar for the sidebar's own independent scroll area */
+        .sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.5) transparent; }
+        .sidebar-scroll::-webkit-scrollbar { width: 6px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background-color: rgba(148, 163, 184, 0.45); border-radius: 9999px; }
+        .sidebar-scroll:hover::-webkit-scrollbar-thumb { background-color: rgba(148, 163, 184, 0.7); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased" data-auth-user="1">
+    <!-- Mobile overlay (only shows when the off-canvas drawer is open) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar(false)"
+         class="fixed inset-0 z-30 hidden bg-slate-900/40 backdrop-blur-sm lg:hidden"></div>
+
+    <!-- Sidebar: fixed to the viewport, full height, never scrolls with the page.
+         Off-canvas drawer on mobile (< lg); always visible on desktop (>= lg). -->
+    <aside id="sidebar"
+           class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full transform flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out lg:translate-x-0">
+        <div class="app-sidebar-head flex h-16 shrink-0 items-center gap-3 border-b border-slate-100 px-4">
+            <img src="http://127.0.0.1:8000/images/logo.png" alt="Isabela State University seal"
+                 class="app-sidebar-logo h-12 w-12 shrink-0 object-contain">
+            <div class="min-w-0 leading-tight nav-label-wrap">
+                <p class="whitespace-nowrap text-sm font-semibold text-slate-800">Supply Management</p>
+                <p class="whitespace-nowrap text-[11px] text-slate-400">Cauayan Campus</p>
+            </div>
+            
+            <button type="button" id="sidebar-collapse"
+                    class="nav-collapse-btn ml-auto hidden rounded-lg p-1.5 text-white/70 transition hover:bg-white/15 hover:text-white lg:block"
+                    title="Collapse sidebar">
+                <span class="sr-only">Collapse sidebar</span>
+                <svg class="nav-collapse-icon h-4 w-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/></svg>
+            </button>
+        </div>
+
+        <nav id="app-nav" class="flex-1 overflow-y-auto overscroll-contain px-3 py-4 text-sm sidebar-scroll"
+     data-current-route="admin.reports.document.index"
+     data-current-url="http://127.0.0.1:8000/admin/reports/ics?month=1&amp;year=2026">
+
+    
+    <div class="nav-search-wrap relative mb-4 px-1" data-nav-label="Search">
+        <button type="button" id="nav-search-trigger"
+                class="flex w-full items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left text-slate-400 transition hover:border-slate-300 hover:text-slate-500"
+                title="Search navigation (Ctrl+K)">
+            <svg class="h-5 w-5 h-4 w-4 shrink-0" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+</svg>
+            <span class="nav-label flex-1 truncate text-[13px]">Search menu…</span>
+            <kbd class="nav-label hidden rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-400 lg:inline">Ctrl K</kbd>
+        </button>
+    </div>
+
+    
+            <div class="nav-group mb-4" data-nav-label="">
+            <div class="nav-items space-y-0.5">
+                                    <a href="http://127.0.0.1:8000/admin/dashboard"
+                       data-nav-item
+                       data-key="admin.dashboard"
+                       data-keywords="home start summary overview analytics"
+                       title="Dashboard"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25zM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25z" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Dashboard</span>
+                    </a>
+                            </div>
+        </div>
+    
+    
+                    <div class="nav-group mb-3" data-nav-section="inventory" data-nav-label="Inventory">
+            <div class="nav-section-heading px-3 py-1.5" title="Inventory">
+                <span class="nav-label text-[11px] font-semibold uppercase tracking-wider text-slate-400">Inventory</span>
+            </div>
+            <div class="nav-items mt-0.5 space-y-0.5">
+                                                        <a href="http://127.0.0.1:8000/admin/supplies"
+                       data-nav-item
+                       data-key="admin.supplies.index"
+                       data-keywords="consumables materials stock office items inventory"
+                                              title="Supplies"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Supplies</span>
+                    </a>
+                                                        <a href="http://127.0.0.1:8000/admin/equipment"
+                       data-nav-item
+                       data-key="admin.equipment.index"
+                       data-keywords="property ppe assets machines devices ict"
+                                              title="Equipment"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Equipment</span>
+                    </a>
+                            </div>
+        </div>
+                    <div class="nav-group mb-3" data-nav-section="documents" data-nav-label="Documents">
+            <div class="nav-section-heading px-3 py-1.5" title="Documents">
+                <span class="nav-label text-[11px] font-semibold uppercase tracking-wider text-slate-400">Documents</span>
+            </div>
+            <div class="nav-items mt-0.5 space-y-0.5">
+                                                        <a href="http://127.0.0.1:8000/admin/documents"
+                       data-nav-item
+                       data-key="admin.documents.index"
+                       data-keywords="all documents register par ics ris iar papers requisition issue slip property acknowledgment receipt inventory custodian inspection acceptance report"
+                                              title="PAR / ICS / RIS"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z" />
+</svg>
+                        <span class="nav-label flex-1 truncate">PAR / ICS / RIS</span>
+                    </a>
+                                                        <a href="http://127.0.0.1:8000/admin/cards"
+                       data-nav-item
+                       data-key="admin.cards.index"
+                       data-keywords="all cards add card register stock cards property cards sc pc ledger balance received issued transfer disposal list"
+                                              title="Stock / Property"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Stock / Property</span>
+                    </a>
+                            </div>
+        </div>
+                    <div class="nav-group mb-3" data-nav-section="organization" data-nav-label="Organization">
+            <div class="nav-section-heading px-3 py-1.5" title="Organization">
+                <span class="nav-label text-[11px] font-semibold uppercase tracking-wider text-slate-400">Organization</span>
+            </div>
+            <div class="nav-items mt-0.5 space-y-0.5">
+                                                        <a href="http://127.0.0.1:8000/admin/rooms"
+                       data-nav-item
+                       data-key="admin.rooms.index"
+                       data-keywords="laboratory building floor location assignment storage"
+                                              title="Rooms"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18 0V3.375c0-.621.504-1.125 1.125-1.125h9.75c.621 0 1.125.504 1.125 1.125V21m-4.5 0v-3.75c0-.621-.504-1.125-1.125-1.125h-2.25c-.621 0-1.125.504-1.125 1.125V21m8.25-13.5h1.5c.621 0 1.125.504 1.125 1.125V21M6.75 6.75h.75m-.75 3h.75m3-3h.75m-.75 3h.75m-3.75 3h.75m2.25 0h.75" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Rooms</span>
+                    </a>
+                                                        <a href="http://127.0.0.1:8000/admin/teachers"
+                       data-nav-item
+                       data-key="admin.teachers.index"
+                       data-keywords="faculty employees staff personnel teacher directory"
+                                              title="Custodians"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Custodians</span>
+                    </a>
+                            </div>
+        </div>
+                    <div class="nav-group mb-3" data-nav-section="reports" data-nav-label="Reports">
+            <div class="nav-section-heading px-3 py-1.5" title="Reports">
+                <span class="nav-label text-[11px] font-semibold uppercase tracking-wider text-slate-400">Reports</span>
+            </div>
+            <div class="nav-items mt-0.5 space-y-0.5">
+                                                        <a href="http://127.0.0.1:8000/admin/reports/monthly"
+                       data-nav-item
+                       data-key="admin.reports.monthly.index"
+                       data-keywords="monthly report per end user blank form manual input fill in nothing follows ris supplies and materials issued print pdf"
+                                              title="Monthly Report"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Monthly Report</span>
+                    </a>
+                                                        <a href="http://127.0.0.1:8000/admin/reports/inventory-summary"
+                       data-nav-item
+                       data-key="admin.reports.inventory-summary"
+                       data-keywords="inventory report stock on hand per item"
+                                              title="Inventory Summary"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Inventory Summary</span>
+                    </a>
+                            </div>
+        </div>
+                    <div class="nav-group mb-3" data-nav-section="administration" data-nav-label="Administration">
+            <div class="nav-section-heading px-3 py-1.5" title="Administration">
+                <span class="nav-label text-[11px] font-semibold uppercase tracking-wider text-slate-400">Administration</span>
+            </div>
+            <div class="nav-items mt-0.5 space-y-0.5">
+                                                        <a href="http://127.0.0.1:8000/admin/account-settings"
+                       data-nav-item
+                       data-key="admin.account-settings.index"
+                       data-keywords="profile password account system settings preferences users archive activity logs"
+                                              title="Settings"
+                       class="nav-link group relative flex items-center gap-3 rounded-lg px-3 py-2 transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                        <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-600" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.281zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+</svg>
+                        <span class="nav-label flex-1 truncate">Settings</span>
+                    </a>
+                            </div>
+        </div>
+    
+    <p id="nav-empty" class="hidden px-3 py-6 text-center text-[13px] text-slate-400">No matching pages.</p>
+</nav>
+
+        <div class="shrink-0 border-t border-slate-100 p-3">
+            <div class="flex items-center gap-3 rounded-lg px-2 py-2">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-800">
+                    SO
+                </div>
+                <div class="min-w-0 leading-tight nav-label-wrap">
+                    <p class="truncate text-sm font-medium text-slate-800">Supply Office Administrator</p>
+                    <p class="truncate text-xs text-slate-400">Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main column: offset by the sidebar width on desktop so nothing hides behind it.
+         The whole page scrolls here (single scrollbar); only the header is sticky. -->
+    
+    <div id="app-main" class="flex min-h-screen flex-col lg:ml-64">
+        <header class="app-header sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:px-6">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar(true)" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="h-5 w-5" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+</svg>
+                </button>
+                <h1 class="text-lg font-semibold text-slate-800">ICS — Inventory Custodian Slip</h1>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                
+                <button id="pwa-install" type="button" title="Install app"
+                        class="hidden items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-800">
+                    <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+</svg>
+                    <span class="hidden sm:inline">Install app</span>
+                </button>
+
+                <button type="button" onclick="window.__themeCycle()"
+                        title="Switch theme (Light / Dark / System)"
+                        class="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+                    <span class="sr-only">Switch theme</span>
+                    
+                    <svg class="theme-ico-light h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+                    </svg>
+                    
+                    <svg class="theme-ico-dark h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+                    </svg>
+                    
+                    <svg class="theme-ico-system h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="13" rx="2"></rect>
+                        <path d="M8 21h8M12 17v4"></path>
+                    </svg>
+                </button>
+
+                
+                <div class="relative" id="user-menu">
+                    <button type="button" id="user-menu-trigger" aria-haspopup="true" aria-expanded="false"
+                            title="Account menu"
+                            class="flex max-w-[12rem] items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-slate-100">
+                        <span class="min-w-0 leading-tight">
+                            <span class="block truncate text-sm font-medium text-slate-800">Supply Office Administrator</span>
+                            <span class="block truncate text-xs text-slate-400">Admin</span>
+                        </span>
+                        <svg class="h-5 w-5 h-4 w-4 shrink-0 text-slate-400" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+</svg>
+                    </button>
+
+                    <div id="user-menu-panel"
+                         class="absolute right-0 z-30 mt-2 hidden w-56 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
+                        <a href="http://127.0.0.1:8000/admin/account-settings"
+                           class="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">
+                            <svg class="h-5 w-5 h-4 w-4 text-slate-400" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.281zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+</svg>
+                            Settings
+                        </a>
+
+                        <form method="POST" action="http://127.0.0.1:8000/admin/logout" onsubmit="showLoading('Logging out…')">
+                            <input type="hidden" name="_token" value="XHnTr2vIpumeTmTbwFzhLd9iIJ4J2WtN79HSYomD" autocomplete="off">                            <button type="submit"
+                                    class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-red-50 hover:text-red-600">
+                                <svg class="h-5 w-5 h-4 w-4 text-slate-400" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+</svg>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            
+                        
+            
+            
+                <style>
+    @page { size: A4 portrait; margin: 10mm 9mm 12mm 9mm; }
+
+    * { box-sizing: border-box; }
+
+    .doc {
+        color: #000;
+        background: #fff;
+        /* The official forms are written in Calibri. dompdf cannot reach a
+           system font, so "DejaVu Sans" stays in the list as the font it can
+           embed — the page looks the same everywhere and never falls back to
+           a serif. */
+        font-family: Calibri, Carlito, "DejaVu Sans", Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        /* The sheet's own printing stands bold — its labels, its headings, the
+           wording it carries and the names it identifies — while what is
+           written into it, the entries and figures, is set in the same face at
+           normal weight. Each bold part is marked where the form prints it, so
+           nothing comes out bold by accident. */
+        font-weight: normal;
+        /* The line the sheet's entries are written on. The two printers of this
+           sheet do not agree on what a line box is — a browser gives it this
+           figure, while the exporter gives it one a third taller — so the
+           pages are measured for each of them rather than for one alone (see
+           SheetPages). The sheet itself stays as the form sets it. */
+        line-height: 1.25;
+    }
+
+    /* ---- Heading ------------------------------------------------------- */
+    .doc-title {
+        margin: 0;
+        text-align: center;
+        font-size: 13px;
+        font-weight: bold;
+        letter-spacing: .4px;
+        text-transform: uppercase;
+    }
+    .doc-org {
+        margin: 1px 0 6px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    /* ---- Tables -------------------------------------------------------- */
+    .doc-grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    .doc-grid th,
+    .doc-grid td {
+        border: 1px solid #000;
+        padding: 2px 4px;
+        vertical-align: top;
+    }
+    /* Stacked tables share one continuous rule instead of doubling it. */
+    .doc-grid.no-top th,
+    .doc-grid.no-top td { border-top: none; }
+    .doc-grid thead { display: table-header-group; }   /* repeat the header on every page */
+    .doc-grid tfoot { display: table-footer-group; }
+    .doc-grid tr { page-break-inside: avoid; }         /* never cut a row in half */
+    .doc-grid thead th {
+        background: #fff;
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+    }
+    /* The recapitulation's headings are not headings of the list: the block is
+       the accounting unit's to fill in, so everything on it — the band over the
+       top and the words under it — stands at the sheet's own weight, the weight
+       the entries and figures above are written in. The list's own headings are
+       the form's bold printing and keep their face. */
+    .doc-recap th { font-weight: normal; }
+    /* The band across the recapitulation's head is not a heading either: it is
+       the form's own label over the block, printed at the sheet's own weight
+       like every other written line the offices fill in. */
+    .doc-grid .band { text-align: center; }
+    .doc-grid .lbl { font-weight: bold; white-space: nowrap; }
+    .doc-grid .blank { border: none; }
+
+    /* ---- Header block ------------------------------------------------ */
+    /* The report's name, the agency and the date share one frame, with no
+       rules between the cells: only the written values are ruled. The frame
+       lives on the table, because the cells carry no borders of their own. */
+    .doc-head { border: 1px solid #000; }
+    .doc-head th,
+    .doc-head td { border: none; }
+    .doc-head .doc-title,
+    .doc-head .doc-org { margin: 0; padding: 1px 4px; }
+    /* The number's field sits at the right side of the sheet, the width of the
+       entry it carries: the label stands in front of it, clear of the rule,
+       and the line runs from just past the label to its own end, which meets
+       the frame's right border. The field is only as wide as the number it was
+       drawn for — a blank form leaves the same width for the office to write
+       one in — so the pair sits against the right border instead of the line
+       trailing away across the middle of the sheet with nothing written on it. */
+    .doc-head .doc-sign-line {
+        /* Counted the way the exporter counts it, so the print sheet and the
+           PDF rule the same line to the same place. Counted in points for the
+           same reason: the blank a blank form leaves is a fixed width, not a
+           share of whatever the frame happens to measure. */
+        box-sizing: content-box;
+        /* A hair under what the number itself measures, so the line hugs the
+           entry it was drawn for and a blank form's line is the same width. */
+        min-width: 50pt;
+        /* The entry is written at the head of the line, straight after the
+           label that introduces it, as the form has it — the line is drawn for
+           the entry, so the entry stands where it is read. */
+        text-align: left;
+        padding: 0 14px 1px;
+        /* The rule is drawn into the frame's own border. The cell keeps its
+           right padding for the words it carries, but that padding would end
+           the line a hair short of the border and leave the two rules looking
+           like one broken edge; the box overhangs the padding instead, so the
+           line and the border meet as the single rule the form shows. */
+        margin-right: -5px;
+    }
+    /* On the working page the number is written into that same rule instead of
+       being printed on it: a field measured exactly as the printed entry is,
+       so what the generator shows and what the sheet rules are one line rather
+       than two that nearly meet. Only the generator draws it — the printed
+       sheet and the PDF are handed the number as the written line it looks
+       like, since neither of them can be typed into. */
+    .doc-head .doc-no-entry {
+        box-sizing: content-box;
+        /* The room the form leaves for the entry before the pen widens it to
+           fit what is actually written. */
+        width: 50pt;
+        min-width: 50pt;
+        text-align: left;
+        padding: 0 14px 1px;
+        margin-right: -5px;
+        border-bottom: 1px solid #000;
+        font: inherit;
+        line-height: inherit;
+        /* The sheet is written in ink on paper whatever the page around it is
+           set in: the application's dark theme paints every field dark, and on
+           the white sheet the number would otherwise stand on a dark chip with
+           the rule a shade of its own. The paper's own colours are forced for
+           that reason, so the working page reads like the sheet it holds. */
+        color: #000 !important;
+        background: transparent !important;
+        border-color: #000 !important;
+        caret-color: #000;
+    }
+    /* It is the sheet's own writing, not a control standing on it: no ring
+       around it when the office clicks in to write. */
+    .doc-head .doc-no-entry:focus { outline: none; }
+    /* The label rides the same box as the line it introduces, so the two sit
+       on one baseline on the print sheet and in the exported paper alike. */
+    .doc-head .doc-no-label { display: inline-block; padding: 0 6px 1px 0; }
+    /* The agency and the date are written straight after their labels, each on
+       a line exactly as long as the words it carries. */
+    .doc-head .doc-head-line { text-decoration: underline; }
+
+    .doc-c { text-align: center; }
+    .doc-r { text-align: right; }
+    .doc-l { text-align: left; }
+    .doc-t { vertical-align: top; }
+    .doc-m { vertical-align: middle; }
+    .doc-b { font-weight: bold; }
+    .doc-i { font-style: italic; }
+    .doc-small { font-size: 13px; }
+    .doc-nowrap { white-space: nowrap; }
+
+    /* The item block: the name, then the full description underneath. Long
+       descriptions wrap and the row grows with them — never truncated. */
+    .doc-name { font-weight: bold; }
+    .doc-desc { margin-top: 1px; }
+
+    /* The item area is ruled by its own columns alone: the verticals run from
+       the headings down to the recapitulation, and no line is drawn between
+       the entries, under the closing line, or under the line an empty report
+       stands its message on — the form's sheet is written on that way, not on
+       a grid. The block is closed by one rule at its foot, the line the
+       recapitulation opens with: drawn here, so the two tables share the one
+       line instead of stacking two rules on top of each other. */
+    .doc-items tbody tr.doc-noline td { border-top: none; border-bottom: none; }
+    .doc-items tbody tr.doc-foot td { border-bottom: 1px solid #000; }
+    /* A list whose columns are held to the sheet's own: the shares are read off
+       the table's first row and kept there, so a long description — or the run
+       of asterisks that closes the list — cannot widen its column and walk the
+       verticals off the lines the headings above them draw. Only a table whose
+       first row names every column may carry this: the widths are taken from
+       that row alone, and a table that opens with a banner spanning its columns
+       instead would have its width divided evenly between them. */
+    .doc-fixed { table-layout: fixed; }
+    /* The line a table names its columns on: it carries the shares alone, so it
+       takes no height and draws nothing. It is written at the head of the
+       banner that opens the item block, which cannot name the columns itself —
+       its spans would be read as an even division of the width — and must
+       still be ruled on the same columns as the list below it. */
+    .doc-grid .doc-measure td {
+        height: 0;
+        padding: 0;
+        border: none;
+        font-size: 0;
+        line-height: 0;
+    }
+
+    /* The "Nothing Follows" line that closes the item list: a run of asterisks
+       around the words. It is written in the form's own font, so it stands the
+       same size as the entries above it, and is cut off rather than wrapped
+       when a column cannot hold the whole run. The words themselves stay at
+       the lighter weight the form writes them in. */
+    .doc-fill {
+        font-weight: normal;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    /* The totals line is written into the form, not printed on it: the word
+       TOTAL and the figures it adds up stand at the sheet's own weight, like
+       the lines above them. Nothing marks the row but the class it carries. */
+
+    /* The recapitulation block keeps the official sheet's own columns, with
+       each heading held inside its column: the money columns are narrow enough
+       that their labels would otherwise wrap, so the words are kept on one
+       line. The two that meet at 76.5 per cent are wide enough to hold them
+       — "TOTAL COST" is the longest word on the sheet and sits inside the
+       column the line gives it, with the ruling clear of the letters. */
+    .doc-recap th,
+    .doc-recap td { padding: 2px 2px; }
+    /* The headings run edge to edge in their columns: side padding would eat
+       into the little room the narrowest of them has, and the money columns
+       are ruled tight around the words they carry. */
+    .doc-recap th { padding: 2px 0; }
+    /* Two of the block's lines are not drawn on the form: the quantity heading
+       stands at the left of the open middle with no rule between them, and the
+       two money columns share one cell below their headings. A seam is a line
+       of the grid the form leaves unruled, so both cells that meet along it
+       drop their border there. */
+    .doc-recap .doc-seam-r { border-right: none; }
+    .doc-recap .doc-seam-l { border-left: none; }
+    /* The strip the item list's own number column leaves beside the block, and
+       the rule that closes the block's left side: the vertical the list rules
+       that column with is carried straight on down the strip, from where the
+       list ends to the block's own foot line, so the block stands closed on
+       its left and the strip reads as the column's foot. The cell keeps the
+       width the list gives that column — the block's headings stay over the
+       columns the entries above were written on — and gives up only the row
+       rules that would cut it into empty little boxes. The cells beside it
+       drop the rule along that seam, so the vertical is drawn once. */
+    .doc-recap .doc-strip { border-bottom: none; }
+    /* The line that ends the block is the sheet's own: the strip's last cell
+       keeps the block's closing rule along its foot — carried out to the
+       sheet's left edge, where it meets the edge coming down — as well as the
+       vertical its own right border draws. The bottom border is named again
+       rather than left to the rule above: same weight, so the line last
+       written is the one that stands. */
+    .doc-recap .doc-strip-end { border-bottom: 1px solid #000; }
+    /* The strip reads on up into the list: the line that closes the entries
+       stops at the strip as the block's own rules do, so the number column
+       runs down to the block's foot line with nothing drawn across the strip
+       at the list's end. The cell keeps the rule parting that column from the
+       end-user beside it — the vertical ends where the list does, as the form
+       draws it. Only the strip is given up, and only by the foot line, so the
+       list's own lines above it are ruled as they were. */
+    .doc-grid tbody tr.doc-foot td.doc-strip { border-bottom: none; }
+    /* The band across the head of the block: the word twice, once over the
+       issued stock and its quantity and once over what it cost, in a face a
+       shade larger than the headings below it and at the sheet's own weight. The band stands beside the
+       stock number's column rather than under it, so the first run centres in
+       the columns it names with no box of its own; the second hangs in a box
+       drawn back a little to the left of the cost column's centre, the way
+       the form prints it. */
+    .doc-recap .band {
+        white-space: nowrap;
+        font-size: 16px;
+        line-height: 1.2;
+        padding: 0;
+    }
+    /* The box is the cost column's own width, so the word centres in the line
+       that parts it from the total cost. Counted for the columns the RIS rules
+       that group with — 14.5 and 9.5 per cent of the sheet's width. */
+    .doc-recap .band-cost {
+        width: 78.8pt;
+        margin-left: -20.4pt;
+    }
+    /* The ICS rules its list on a wider grid, so the money group its second run
+       heads is wider than the box the RIS draws the word in. On the RIS the box
+       is set back from the group's centre; there it is left to stand centred in
+       the group the ruling gives it, so the word heads what it names while the
+       two papers' blocks keep their own columns. */
+    .doc-recap-ics .band-cost {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* The empty lines of a blank form: ruled rows to write on. */
+    .doc-blank td { height: 15px; }
+
+    /* The closing recapitulation moves to the next page as one block rather
+       than leaving its TOTAL row orphaned behind the items. */
+    .doc-keep { page-break-inside: avoid; }
+
+
+
+    /* ---- Statement ----------------------------------------------------- */
+    .doc-empty {
+        border: 1px solid #000;
+        padding: 26px 12px;
+        text-align: center;
+        font-style: italic;
+    }
+
+    /* ---- Certification ------------------------------------------------ */
+    /* The block the form closes with: the statement over an open area and
+       the lines the two offices post and sign on. Only the frame, the
+       divider that closes the statement, and the two rules the names and
+       titles hang from are drawn — the rest of the block stays open, the
+       way the official form leaves it. */
+    /* The signing block travels as one piece: a report that runs out of room
+       carries the whole certification over to the next page rather than
+       leaving its last row — the titles the two offices sign under — stranded
+       on a page of its own. The recapitulation above it does the same, so the
+       sheet closes in whole blocks and the items fill the page they are on. */
+    .doc-grid.doc-cert { border: 1px solid #000; border-top: none; page-break-inside: avoid; }
+    .doc-grid.doc-cert td {
+        border: none;
+        padding: 2px 4px;
+        vertical-align: top;
+    }
+    /* The block is written into and signed, so only the officer's name stands
+       bold, the way the printed name does on the signing lines below: the
+       statement the form carries, the caption the two offices post under and
+       the titles under them stay at the sheet's own weight, like the entries
+       and figures above. */
+    .doc-grid.doc-cert .doc-cert-statement {
+        height: 28pt;
+        border-right: 1px solid #000;
+    }
+    .doc-grid.doc-cert .doc-cert-divider { border-right: 1px solid #000; }
+    /* The rule the supply officer's name is written above, and the rule the
+       positions sit under. Both stop short of the divider, as on the form.
+       The officer's name is the form's own printing standing on that rule, so
+       it carries the bold face the signing lines give their printed names. */
+    .doc-grid.doc-cert .doc-cert-name {
+        height: 14pt;
+        vertical-align: bottom;
+        border-bottom: 1px solid #000;
+        font-weight: bold;
+    }
+    /* The positions the two offices sign under, on the rule they hang from. */
+    .doc-grid.doc-cert .doc-cert-rule { border-top: 1px solid #000; }
+    /* Open space between the officer's rule and the titles' rules. */
+    .doc-grid.doc-cert .doc-cert-gap td { height: 14pt; }
+
+    /* ---- Signatures ---------------------------------------------------- */
+    .doc-sig-space { height: 30px; }
+    /* The printed name stands bold on its rule; the small captions under the
+       rules ("Signature Over Printed Name", "Position") are the form's own
+       wording, so they are bold too. */
+    .doc-sig-name { font-weight: bold; }
+    .doc-sig-label { font-size: 13px; font-weight: bold; }
+    /* The ruled line a name, position or date is written on. */
+    .doc-sign-line {
+        display: inline-block;
+        min-width: 75%;
+        padding: 0 6px 1px;
+        border-bottom: 1px solid #000;
+        text-align: center;
+    }
+
+    /* ---- Name page ----------------------------------------------------- */
+    /* When one run covers both the RIS and the ICS, each report opens with a
+       page naming it. It holds nothing but the name, so it cannot be mistaken
+       for a report's own first page. */
+    .doc-cover { text-align: center; padding-top: 70mm; }
+    .doc-cover-title {
+        margin: 8px 0 0;
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+    .doc-cover-name {
+        margin-top: 8mm;
+        font-size: 54px;
+        font-weight: bold;
+        letter-spacing: 10px;
+        text-transform: uppercase;
+    }
+    /* No number on this page: it names a paper rather than reporting one, so it
+       takes no place in the run's numbering. */
+    .doc-cover-period { margin-top: 6mm; font-size: 13px; font-weight: bold; }
+
+    /* One ICS slip per custodian: each starts on its own page. */
+    .doc-sheet + .doc-sheet { page-break-before: always; }
+
+    /* On screen the slips stack inside one sheet (page breaks only exist on
+       paper), so separate them visually instead. */
+    @media screen {
+        .doc-sheet + .doc-sheet {
+            margin-top: 10mm;
+            padding-top: 10mm;
+            border-top: 1px dashed #94a3b8;
+        }
+    }
+
+    /* ---- Screen-only chrome (ignored by dompdf) ------------------------ */
+    /* The sheet as it appears in the browser preview and in the print view. */
+    .doc-paper {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 12px auto 24px;
+        padding: 10mm 9mm;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .18);
+    }
+    .doc-inline {
+        width: 210mm;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 10mm 9mm;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .18);
+    }
+    .doc-bar {
+        max-width: 210mm;
+        margin: 0 auto;
+        padding: 12px 9mm;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        font-family: "DejaVu Sans", Arial, sans-serif;
+        font-size: 12px;
+    }
+    .doc-bar a,
+    .doc-bar button {
+        display: inline-block;
+        padding: 8px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        color: #0f172a;
+        font-family: inherit;
+        font-size: 12px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .doc-bar .primary { background: #166534; border-color: #166534; color: #fff; }
+    .doc-bar .spacer { margin-right: auto; }
+    /* The note about the browser's own print header and footer sits at the
+       front of the bar, where it is read before the buttons are pressed. */
+    .doc-bar .hint {
+        flex: 1 1 320px;
+        color: #64748b;
+        line-height: 1.4;
+    }
+
+    @media print {
+        /* Only the paper prints. Reached even when the reader prints the
+           generator page straight from the browser, so the sidebar, the
+           header, the filters and the buttons never reach the page. */
+        #sidebar, #sidebar-overlay, .app-header, .doc-bar, .doc-nonprint,
+        nav[aria-label="Breadcrumb"], .doc-scroll { display: none !important; }
+
+        body { background: #fff !important; }
+        #app-main { margin-left: 0 !important; }
+        main { padding: 0 !important; }
+
+        .doc-paper,
+        .doc-inline {
+            width: auto !important;
+            max-width: none !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+    
+            <div class="doc-nonprint mb-4">
+            <a href="http://127.0.0.1:8000/admin/reports/par-ics-ris" class="inline-flex items-center gap-1.5 text-sm text-slate-500 transition hover:text-slate-700">
+                <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+</svg>
+                Back to PAR / ICS / RIS
+            </a>
+        </div>
+    
+    
+    <form id="report-form" method="GET"
+          action="http://127.0.0.1:8000/admin/reports/ics"
+          data-print-url="http://127.0.0.1:8000/admin/reports/ics/print"
+          class="doc-nonprint mb-5 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+        
+        <input type="hidden" name="generated" value="1">
+
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+                <h2 class="font-semibold text-slate-800">Inventory Custodian Slip</h2>
+                <p class="text-xs text-slate-400">ICS · built from the records on file</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">Entity Name</span>
+        <input type="text" name="entity_name" value="Isabela State University - Cauayan Campus"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">Fund Cluster</span>
+        <input type="text" name="fund_cluster" value="" placeholder="e.g. 101"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">ICS No.</span>
+        <input type="text" name="document_no" value="ICS-2026-00054"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">Date</span>
+        <input type="date" name="document_date" value="2026-10-02"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">Received from (supply office)</span>
+        <input type="text" name="received_from" value="Supply Office Administrator"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">Received from — Position</span>
+        <input type="text" name="received_from_position" value="Administrative Officer V"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+
+    <label class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-slate-500">Custodian position (fallback)</span>
+        <input type="text" name="received_by_position" value="" placeholder="Used when the custodian has no position on file"
+               class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm">
+    </label>
+</div>
+
+<div data-picker>
+    <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <p class="text-xs font-medium text-slate-600">
+            Select equipment
+            <span class="font-normal text-slate-400">— 8 on file</span>
+        </p>
+
+                    <div class="flex items-center gap-2">
+                <input type="search" data-picker-search placeholder="Filter by name, code, custodian…"
+                       class="w-56 rounded-lg border border-slate-300 px-2 py-1 text-xs">
+                <button type="button" data-picker-all class="rounded-lg border border-slate-300 px-2 py-1 text-xs text-slate-600 hover:bg-slate-50">Select all</button>
+                <button type="button" data-picker-none class="rounded-lg border border-slate-300 px-2 py-1 text-xs text-slate-600 hover:bg-slate-50">Clear</button>
+            </div>
+            </div>
+
+            <div class="max-h-72 overflow-y-auto rounded-lg border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-100 text-xs">
+                <tbody class="divide-y divide-slate-100">
+                                            <tr data-picker-row data-picker-text="dell optiplex desktop computer eqp-00001 pn-00001 cristina bautista a102">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="1"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Dell OptiPlex Desktop Computer
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00001
+                                                                            &middot; EQP-00001
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Cristina Bautista</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">A102</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="epson lcd projector eqp-00002 pn-00002 ricardo ramos a101">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="2"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Epson LCD Projector
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00002
+                                                                            &middot; EQP-00002
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Ricardo Ramos</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">A101</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="hp laserjet printer eqp-00003 pn-00003 angelica fernandez a102">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="3"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    HP LaserJet Printer
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00003
+                                                                            &middot; EQP-00003
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Angelica Fernandez</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">A102</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="office swivel chair eqp-00005 pn-00005 michael tolentino b101">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="5"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Office Swivel Chair
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00005
+                                                                            &middot; EQP-00005
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Michael Tolentino</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">B101</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="split-type air conditioner 2hp eqp-00004 pn-00004 angelica fernandez a102">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="4"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Split-Type Air Conditioner 2HP
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00004
+                                                                            &middot; EQP-00004
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Angelica Fernandez</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">A102</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="whiteboard 4x8ft eqp-00007 pn-00007 cristina bautista b102">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="7"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Whiteboard 4x8ft
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00007
+                                                                            &middot; EQP-00007
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Cristina Bautista</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">B102</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="wireless microphone set eqp-00008 pn-00008 cristina bautista b102">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="8"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Wireless Microphone Set
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00008
+                                                                            &middot; EQP-00008
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Cristina Bautista</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">B102</td>
+                        </tr>
+                                            <tr data-picker-row data-picker-text="wooden teacher&#039;s table eqp-00006 pn-00006 michael tolentino b101">
+                            <td class="w-8 px-3 py-2 align-top">
+                                <input type="checkbox" name="equipment[]" value="6"
+                                       data-picker-checkbox checked                                       class="rounded border-slate-300 text-brand-700 focus:ring-brand-500">
+                            </td>
+                            <td class="px-2 py-2 align-top">
+                                <p class="font-medium text-slate-700">
+                                    Wooden Teacher&#039;s Table
+                                                                            <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-normal text-slate-500">via ICS</span>
+                                                                    </p>
+                                <p class="text-slate-400">
+                                    PN-00006
+                                                                            &middot; EQP-00006
+                                                                    </p>
+                            </td>
+                            <td class="px-2 py-2 align-top text-slate-500">Michael Tolentino</td>
+                            <td class="px-3 py-2 align-top text-right text-slate-400">B101</td>
+                        </tr>
+                                    </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div class="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+            <button type="submit"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-brand-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-900">
+                <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125z" />
+</svg>
+                Generate Report
+            </button>
+            <button type="submit" formaction="http://127.0.0.1:8000/admin/reports/ics/print" formtarget="_blank"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 transition hover:bg-slate-50">
+                <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z" />
+</svg>
+                Preview
+            </button>
+            <button type="button" onclick="isuPrintDocument()"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 transition hover:bg-slate-50">
+                <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+</svg>
+                Print
+            </button>
+            <button type="submit" formaction="http://127.0.0.1:8000/admin/reports/ics/pdf"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 transition hover:bg-slate-50">
+                <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+</svg>
+                Export PDF
+            </button>
+        </div>
+    </form>
+
+    <p class="doc-nonprint mb-3 text-sm text-slate-500">0 custodian slip(s) &middot; 0 item(s) &middot; Total 0.00</p>
+
+    
+    <div class="doc-inline">
+        
+        <div class="doc doc-sheet">
+        <h1 class="doc-title">Inventory Custodian Slip</h1>
+        <div class="doc-org">Isabela State University - Cauayan Campus</div>
+
+        <table class="doc-grid">
+            
+            <tr>
+                <th class="lbl" style="width:14%;">Entity Name:</th>
+                <td colspan="3">Isabela State University - Cauayan Campus</td>
+                <th class="lbl" style="width:11%;">ICS No.:</th>
+                <td style="width:17%;">ICS-2026-00054</td>
+            </tr>
+            <tr>
+                <th class="lbl">Fund Cluster:</th>
+                <td colspan="3"></td>
+                <th class="lbl">Date:</th>
+                <td>October 02, 2026</td>
+            </tr>
+            <tr>
+                <th class="lbl">Custodian:</th>
+                <td colspan="5" class="doc-b">—</td>
+            </tr>
+        </table>
+
+        
+        <table class="doc-grid doc-fixed no-top">
+            <thead>
+                <tr>
+                    <th style="width:14%;">Inventory / Property No.</th>
+                    <th style="width:18%;">Item</th>
+                    <th>Description</th>
+                    <th style="width:6%;">Qty</th>
+                    <th style="width:7%;">Unit</th>
+                    <th style="width:11%;">Unit Cost</th>
+                    <th style="width:12%;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                                    <tr>
+                        <td colspan="7" class="doc-c doc-i" style="padding:24px 8px;">No records found for the selected period.</td>
+                    </tr>
+                
+                
+                            </tbody>
+        </table>
+
+        
+        <table class="doc-grid doc-recap doc-fixed no-top doc-keep doc-recap-ics">
+    <tbody>
+        
+        <tr class="doc-measure">
+                            <td style="width:14%;"></td>
+                            <td style="width:18%;"></td>
+                            <td style="width:10%;"></td>
+                            <td style="width:22%;"></td>
+                            <td style="width:13%;"></td>
+                            <td style="width:11%;"></td>
+                            <td style="width:12%;"></td>
+                    </tr>
+        
+        <tr>
+            
+            <td class="doc-strip"></td>
+            <td colspan="3" class="band doc-seam-l doc-seam-r"><div class="band-issue">Recapitulation</div></td>
+            <td colspan="2" class="band doc-seam-l"><div class="band-cost">Recapitulation</div></td>
+            <td class="band"></td>
+        </tr>
+        <tr>
+            <th class="doc-c doc-strip" style="width:14%;"></th>
+            <th class="doc-c doc-nowrap doc-seam-l" style="width:18%;">STOCK NO:</th>
+            <th class="doc-c doc-nowrap doc-seam-r" style="width:10%;">QNTY</th>
+            <th class="doc-c doc-seam-l" style="width:22%;"></th>
+            <th class="doc-c doc-nowrap" style="width:13%;">UNIT COST</th>
+            <th class="doc-c doc-nowrap" style="width:11%;">TOTAL COST</th>
+            <th class="doc-c doc-nowrap" style="width:12%;">AMOUNT</th>
+        </tr>
+
+                    
+            <tr class="doc-blank">
+                <td class="doc-strip doc-strip-end"></td>
+                <td class="doc-seam-l"></td>
+                <td class="doc-seam-r"></td>
+                <td class="doc-seam-l"></td>
+                <td></td>
+                <td class="doc-seam-r"></td>
+                <td class="doc-seam-l"></td>
+            </tr>
+        
+            </tbody>
+</table>
+        <table class="doc-grid doc-cert no-top">
+    <tbody>
+        <tr>
+            <td colspan="2" class="doc-cert-statement">I HEREBY CERTIFY TO THE CORRECTNESS OF THE ABOVE INFORMATION</td>
+            <td class="doc-cert-post">Posted By/ Date:</td>
+            <td class="doc-r doc-cert-post">Posted By/ Date:</td>
+        </tr>
+        
+        <tr>
+            <td class="doc-cert-name doc-c" style="width:44.4%;">Supply Office Administrator</td>
+            <td class="doc-cert-divider" style="width:11.6%;"></td>
+            <td style="width:21%;"></td>
+            <td style="width:23%;"></td>
+        </tr>
+        
+        <tr class="doc-cert-gap">
+            <td></td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="doc-c doc-cert-rule">Administrative Officer V</td>
+            <td class="doc-cert-divider"></td>
+            <td></td>
+            <td class="doc-c doc-cert-rule">Accounting Clerk</td>
+        </tr>
+    </tbody>
+</table>
+
+        <table class="doc-grid no-top">
+            <tbody>
+                <tr class="doc-t">
+                    <td style="width:50%;">
+                        <div class="doc-b">Received from:</div>
+<div class="doc-sig-space"></div>
+<div class="doc-c"><span class="doc-sign-line doc-sig-name">Supply Office Administrator</span></div>
+<div class="doc-c doc-sig-label">Signature Over Printed Name</div>
+<div class="doc-sig-space" style="height:16px;"></div>
+<div class="doc-c"><span class="doc-sign-line">Administrative Officer V</span></div>
+<div class="doc-c doc-sig-label">Position</div>
+    <div class="doc-sig-label" style="margin-top:10px;">
+        Date: <span class="doc-sign-line" style="min-width:50%; padding-left:6px;">October 02, 2026</span>
+    </div>
+                    </td>
+                    <td style="width:50%;">
+                        <div class="doc-b">Received by:</div>
+<div class="doc-sig-space"></div>
+<div class="doc-c"><span class="doc-sign-line doc-sig-name"></span></div>
+<div class="doc-c doc-sig-label">Signature Over Printed Name</div>
+<div class="doc-sig-space" style="height:16px;"></div>
+<div class="doc-c"><span class="doc-sign-line"></span></div>
+<div class="doc-c doc-sig-label">Position</div>
+    <div class="doc-sig-label" style="margin-top:10px;">
+        Date: <span class="doc-sign-line" style="min-width:50%; padding-left:6px;">October 02, 2026</span>
+    </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <script>
+        // Open the printed sheet in its own tab, asking it to bring up the
+        // browser's print dialog straight away.
+        function isuPrintDocument() {
+            const form = document.getElementById('report-form');
+            if (!form) return;
+
+            const params = new URLSearchParams();
+            new FormData(form).forEach(function (value, key) { params.append(key, value); });
+            params.set('print', '1');
+
+            window.open(form.dataset.printUrl + '?' + params.toString(), '_blank');
+        }
+
+        // The report number stands in the rule the sheet draws for it, so it is
+        // written straight into that rule rather than a box of the browser's
+        // own: the field is the width of the rule until what is written
+        // outgrows it, and widens with it from there.
+        document.querySelectorAll('[data-no-entry]').forEach(function (field) {
+            field.addEventListener('input', function () {
+                field.style.width = '';
+
+                if (field.scrollWidth > field.clientWidth) {
+                    field.style.width = field.scrollWidth + 'px';
+                }
+            });
+        });
+
+        // The filter menus: one control that names the choices it holds, opened
+        // by a click and closed by a click away or Escape. The checkbox fields
+        // inside are part of the form whether it is open or shut, so what they
+        // say reaches the preview, the sheet and the PDF either way.
+        document.querySelectorAll('[data-menu]').forEach(function (menu) {
+            const trigger = menu.querySelector('[data-menu-trigger]');
+            const panel = menu.querySelector('[data-menu-panel]');
+            if (!trigger || !panel) return;
+
+            function close() {
+                panel.classList.add('hidden');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const willOpen = panel.classList.contains('hidden');
+                panel.classList.toggle('hidden', !willOpen);
+                trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!menu.contains(e.target)) close();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') close();
+            });
+        });
+
+        // The equipment list: a search box and select all / clear, so a long
+        // inventory is still workable.
+        document.querySelectorAll('[data-picker]').forEach(function (picker) {
+            const rows = Array.from(picker.querySelectorAll('[data-picker-row]'));
+            const search = picker.querySelector('[data-picker-search]');
+
+            if (search) {
+                search.addEventListener('input', function () {
+                    const term = search.value.trim().toLowerCase();
+                    rows.forEach(function (row) {
+                        row.hidden = term !== '' && !row.dataset.pickerText.includes(term);
+                    });
+                });
+            }
+
+            const all = picker.querySelector('[data-picker-all]');
+            if (all) {
+                all.addEventListener('click', function () {
+                    rows.filter(function (row) { return !row.hidden; }).forEach(function (row) {
+                        const box = row.querySelector('[data-picker-checkbox]');
+                        if (box) box.checked = true;
+                    });
+                });
+            }
+
+            const none = picker.querySelector('[data-picker-none]');
+            if (none) {
+                none.addEventListener('click', function () {
+                    picker.querySelectorAll('[data-picker-checkbox]').forEach(function (box) { box.checked = false; });
+                });
+            }
+        });
+    </script>
+        </main>
+    </div>
+
+    <div id="app-loading" class="app-loading" role="status" aria-live="polite" aria-hidden="true">
+    <div class="app-loading-card">
+        <span class="app-loading-spinner" aria-hidden="true"></span>
+        <span id="app-loading-text" class="app-loading-text">Loading&hellip;</span>
+    </div>
+</div>
+
+<script>
+    window.showLoading = function (message) {
+        var el = document.getElementById('app-loading');
+        if (!el) return;
+        if (message) document.getElementById('app-loading-text').textContent = message;
+        el.classList.add('is-visible');
+        el.setAttribute('aria-hidden', 'false');
+    };
+    window.hideLoading = function () {
+        var el = document.getElementById('app-loading');
+        if (!el) return;
+        el.classList.remove('is-visible');
+        el.setAttribute('aria-hidden', 'true');
+    };
+    // Safety: if a page is restored from the bfcache (e.g. back button), hide it.
+    window.addEventListener('pageshow', function () { window.hideLoading(); });
+</script>
+
+    <div id="nav-search-overlay" class="fixed inset-0 z-50 hidden items-start justify-center p-4 pt-[12vh]">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+
+    <div class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div class="flex items-center gap-3 border-b border-slate-100 px-4">
+            <svg class="h-5 w-5 h-5 w-5 shrink-0 text-slate-400" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+</svg>
+            <input id="nav-search-input" type="text" autocomplete="off" role="combobox" aria-expanded="true"
+                   placeholder="Search pages… (e.g. RIS, Stock Card, Low Stock)"
+                   class="w-full bg-transparent py-3.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none" />
+            <button type="button" onclick="document.getElementById('nav-search-overlay').classList.add('hidden'); document.getElementById('nav-search-overlay').classList.remove('flex');"
+                    class="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" title="Close (Esc)">
+                <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+</svg>
+            </button>
+        </div>
+        <div id="nav-search-results" class="max-h-[50vh] overflow-y-auto p-2" role="listbox"></div>
+        <div class="flex items-center gap-4 border-t border-slate-100 px-4 py-2 text-[11px] text-slate-400">
+            <span><kbd class="rounded border border-slate-200 px-1">↑</kbd> <kbd class="rounded border border-slate-200 px-1">↓</kbd> navigate</span>
+            <span><kbd class="rounded border border-slate-200 px-1">Enter</kbd> open</span>
+            <span><kbd class="rounded border border-slate-200 px-1">Esc</kbd> close</span>
+        </div>
+    </div>
+</div>
+
+    
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="ISUConfirm.hide()"></div>
+        <div class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div class="mb-3 flex items-center gap-3">
+                <span id="confirm-icon" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600">
+                    <svg class="h-5 w-5" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+</svg>
+                </span>
+                <h3 id="confirm-title" class="text-base font-semibold text-slate-800">Please confirm</h3>
+            </div>
+            <p id="confirm-message" class="mb-6 text-sm text-slate-500">This action cannot be undone.</p>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="ISUConfirm.hide()" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50">
+                    <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+</svg>
+ Cancel
+                </button>
+                <button type="button" id="confirm-ok" class="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                    <svg class="h-5 w-5 h-4 w-4" stroke-width="1.6"
+     fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+</svg>
+ <span id="confirm-ok-label">Delete</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar(open) {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full', !open);
+            document.getElementById('sidebar-overlay').classList.toggle('hidden', !open);
+            // Lock background scroll while the mobile drawer is open.
+            document.body.classList.toggle('overflow-hidden', open);
+        }
+
+        window.ISUConfirm = {
+            form: null,
+            show(form) {
+                this.form = form;
+                document.getElementById('confirm-message').textContent =
+                    form.getAttribute('data-confirm') || 'This action cannot be undone.';
+                document.getElementById('confirm-title').textContent =
+                    form.getAttribute('data-confirm-title') || 'Please confirm';
+                document.getElementById('confirm-ok-label').textContent =
+                    form.getAttribute('data-confirm-button') || 'Delete';
+                const m = document.getElementById('confirm-modal');
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            },
+            hide() {
+                const m = document.getElementById('confirm-modal');
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+                this.form = null;
+            },
+        };
+
+        // Intercept any form that opts in with data-confirm.
+        document.addEventListener('submit', function (e) {
+            const f = e.target;
+            if (f.matches('[data-confirm]') && !f.dataset.confirmed) {
+                e.preventDefault();
+                window.ISUConfirm.show(f);
+            }
+        });
+
+        document.getElementById('confirm-ok').addEventListener('click', function () {
+            const f = window.ISUConfirm.form;
+            window.ISUConfirm.hide();
+            if (f) {
+                f.dataset.confirmed = '1';
+                f.submit();
+            }
+        });
+
+        // Sheets that open over the page rather than pushing it down — adding a
+        // user, and whatever else needs a form of its own. A sheet is addressed
+        // by id and marked with data-modal, so Escape closes whichever ones are
+        // open; the background is locked while one is up.
+        window.ISUModal = {
+            open(id) {
+                const sheet = document.getElementById(id);
+                if (!sheet) return;
+
+                sheet.classList.remove('hidden');
+                sheet.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+
+                const first = sheet.querySelector('[data-modal-focus]');
+                if (first) first.focus();
+            },
+            close(id) {
+                const sheet = document.getElementById(id);
+                if (!sheet) return;
+
+                sheet.classList.add('hidden');
+                sheet.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+            },
+        };
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape') return;
+
+            document.querySelectorAll('[data-modal]').forEach(function (sheet) {
+                window.ISUModal.close(sheet.id);
+            });
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') window.ISUConfirm.hide();
+        });
+    </script>
+
+    
+    <script>
+        (function () {
+            const wrap = document.getElementById('user-menu');
+            if (!wrap) return;
+
+            const trigger = document.getElementById('user-menu-trigger');
+            const panel = document.getElementById('user-menu-panel');
+
+            function close() {
+                panel.classList.add('hidden');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const willOpen = panel.classList.contains('hidden');
+                panel.classList.toggle('hidden', !willOpen);
+                trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) close();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') close();
+            });
+        })();
+    </script>
+
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').catch(function () {});
+            });
+        }
+
+        let deferredInstallPrompt = null;
+        const installBtn = document.getElementById('pwa-install');
+
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            if (installBtn) installBtn.classList.replace('hidden', 'inline-flex');
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener('click', async function () {
+                if (!deferredInstallPrompt) return;
+                deferredInstallPrompt.prompt();
+                await deferredInstallPrompt.userChoice;
+                deferredInstallPrompt = null;
+                installBtn.classList.replace('inline-flex', 'hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', function () {
+            if (installBtn) installBtn.classList.replace('inline-flex', 'hidden');
+        });
+    </script>
+</body>
+</html>

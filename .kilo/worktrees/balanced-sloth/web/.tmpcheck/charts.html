@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard line charts — turned month labels</title>
+<style>body { margin: 0; padding: 24px; background: #f8fafc; font-family: "Segoe UI", system-ui, sans-serif; }
+.card { max-width: 1560px; margin: 0 auto; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; }
+.card + .card { margin-top: 20px; }
+.card h3 { margin: 0; font-size: 17px; color: #1e293b; }
+.sub { margin: 4px 0 0; font-size: 13px; color: #94a3b8; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 18px; }
+.grid h4 { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #334155; }
+.note { margin: 4px 0 0; font-size: 12px; color: #94a3b8; }
+svg { height: auto; width: 100%; }
+.chart-grid { stroke: #e2e8f0; stroke-width: 1px; }
+.chart-axis { stroke: #cbd5e1; stroke-width: 1px; }
+.chart-line { fill: none; stroke: #006400; stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
+.chart-point { fill: #006400; stroke: #ffffff; stroke-width: 2; }
+.chart-axis-label { fill: #64748b; font-size: 11px; }
+.chart-axis-label-muted { fill: #cbd5e1; font-size: 11px; }
+.chart-value-label { fill: #334155; font-size: 11px; font-weight: 600; }
+.chart-compact .chart-axis-label, .chart-compact .chart-axis-label-muted, .chart-compact .chart-value-label { font-size: 22px; }
+.chart-gap { fill: #cbd5e1; }</style>
+</head>
+<body>
+<div class="card">
+    <h3>Monthly Cost Analysis — Supplies</h3>
+    <p class="sub">Last 6 Months (May 2026 – Oct 2026) · 1 of 6 months in this range have purchase records.</p>
+    <div class="grid">
+        <div class="chart-compact">
+            <h4>Monthly purchase cost</h4>
+            <svg viewBox="0 0 720 317" class="h-auto w-full" role="img"
+         aria-label="Line chart of May 2026, Jun 2026, Jul 2026, Aug 2026, Sep 2026, Oct 2026">
+        
+                                <line x1="97" y1="214" x2="700" y2="214" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="218" text-anchor="end" class="chart-axis-label">₱510</text>
+                                <line x1="97" y1="166" x2="700" y2="166" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="170" text-anchor="end" class="chart-axis-label">₱555</text>
+                                <line x1="97" y1="118" x2="700" y2="118" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="122" text-anchor="end" class="chart-axis-label">₱600</text>
+                                <line x1="97" y1="70" x2="700" y2="70" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="74" text-anchor="end" class="chart-axis-label">₱645</text>
+                                <line x1="97" y1="22" x2="700" y2="22" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="26" text-anchor="end" class="chart-axis-label">₱690</text>
+        
+        <line x1="97" y1="214" x2="700" y2="214" class="chart-axis" vector-effect="non-scaling-stroke" />
+
+        
+                                <line x1="97" y1="214" x2="97" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="97" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="97" y="230" text-anchor="end"
+                      transform="rotate(-45 97 230)"
+                      class="chart-axis-label chart-axis-label-muted">May 2026</text>
+                                            <line x1="217.6" y1="214" x2="217.6" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="217.6" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="217.6" y="230" text-anchor="end"
+                      transform="rotate(-45 217.6 230)"
+                      class="chart-axis-label chart-axis-label-muted">Jun 2026</text>
+                                            <line x1="338.2" y1="214" x2="338.2" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="338.2" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="338.2" y="230" text-anchor="end"
+                      transform="rotate(-45 338.2 230)"
+                      class="chart-axis-label chart-axis-label-muted">Jul 2026</text>
+                                            <line x1="458.8" y1="214" x2="458.8" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="458.8" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="458.8" y="230" text-anchor="end"
+                      transform="rotate(-45 458.8 230)"
+                      class="chart-axis-label chart-axis-label-muted">Aug 2026</text>
+                                            <line x1="579.4" y1="214" x2="579.4" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="579.4" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="579.4" y="230" text-anchor="end"
+                      transform="rotate(-45 579.4 230)"
+                      class="chart-axis-label chart-axis-label-muted">Sep 2026</text>
+                                            <line x1="700" y1="214" x2="700" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="700" y="230" text-anchor="end"
+                      transform="rotate(-45 700 230)"
+                      class="chart-axis-label ">Oct 2026</text>
+                    
+        
+                    
+                            <circle cx="700" cy="118" r="4.5" class="chart-point" />
+                                                        <text x="700" y="105" text-anchor="end" class="chart-value-label">
+                        ₱600
+                    </text>
+                                        </svg>
+
+            <p class="mt-1 text-xs text-slate-400">1 of 6 months in this range have purchase records. Months without records are left blank on purpose.</p>
+    
+        </div>
+        <div class="chart-compact">
+            <h4>Monthly average unit cost</h4>
+            <svg viewBox="0 0 720 317" class="h-auto w-full" role="img"
+         aria-label="Line chart of May 2026, Jun 2026, Jul 2026, Aug 2026, Sep 2026, Oct 2026">
+        
+                                <line x1="97" y1="214" x2="700" y2="214" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="218" text-anchor="end" class="chart-axis-label">₱5.10</text>
+                                <line x1="97" y1="166" x2="700" y2="166" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="170" text-anchor="end" class="chart-axis-label">₱5.55</text>
+                                <line x1="97" y1="118" x2="700" y2="118" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="122" text-anchor="end" class="chart-axis-label">₱6.00</text>
+                                <line x1="97" y1="70" x2="700" y2="70" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="74" text-anchor="end" class="chart-axis-label">₱6.45</text>
+                                <line x1="97" y1="22" x2="700" y2="22" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="26" text-anchor="end" class="chart-axis-label">₱6.90</text>
+        
+        <line x1="97" y1="214" x2="700" y2="214" class="chart-axis" vector-effect="non-scaling-stroke" />
+
+        
+                                <line x1="97" y1="214" x2="97" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="97" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="97" y="230" text-anchor="end"
+                      transform="rotate(-45 97 230)"
+                      class="chart-axis-label chart-axis-label-muted">May 2026</text>
+                                            <line x1="217.6" y1="214" x2="217.6" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="217.6" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="217.6" y="230" text-anchor="end"
+                      transform="rotate(-45 217.6 230)"
+                      class="chart-axis-label chart-axis-label-muted">Jun 2026</text>
+                                            <line x1="338.2" y1="214" x2="338.2" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="338.2" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="338.2" y="230" text-anchor="end"
+                      transform="rotate(-45 338.2 230)"
+                      class="chart-axis-label chart-axis-label-muted">Jul 2026</text>
+                                            <line x1="458.8" y1="214" x2="458.8" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="458.8" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="458.8" y="230" text-anchor="end"
+                      transform="rotate(-45 458.8 230)"
+                      class="chart-axis-label chart-axis-label-muted">Aug 2026</text>
+                                            <line x1="579.4" y1="214" x2="579.4" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="579.4" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="579.4" y="230" text-anchor="end"
+                      transform="rotate(-45 579.4 230)"
+                      class="chart-axis-label chart-axis-label-muted">Sep 2026</text>
+                                            <line x1="700" y1="214" x2="700" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="700" y="230" text-anchor="end"
+                      transform="rotate(-45 700 230)"
+                      class="chart-axis-label ">Oct 2026</text>
+                    
+        
+                    
+                            <circle cx="700" cy="118" r="4.5" class="chart-point" />
+                                                        <text x="700" y="105" text-anchor="end" class="chart-value-label">
+                        ₱6.00
+                    </text>
+                                        </svg>
+
+            <p class="mt-1 text-xs text-slate-400">Average of the unit costs recorded in each month.</p>
+    
+        </div>
+    </div>
+</div>
+<div class="card">
+    <h3>Monthly purchase cost — 12 month range</h3>
+    <p class="sub">The densest range the dashboard offers: all twelve short names are printed.</p>
+    <div class="grid">
+        <div class="chart-compact">
+            <svg viewBox="0 0 720 317" class="h-auto w-full" role="img"
+         aria-label="Line chart of Nov 2025, Dec 2025, Jan 2026, Feb 2026, Mar 2026, Apr 2026, May 2026, Jun 2026, Jul 2026, Aug 2026, Sep 2026, Oct 2026">
+        
+                                <line x1="97" y1="214" x2="700" y2="214" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="218" text-anchor="end" class="chart-axis-label">₱528</text>
+                                <line x1="97" y1="166" x2="700" y2="166" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="170" text-anchor="end" class="chart-axis-label">₱570</text>
+                                <line x1="97" y1="118" x2="700" y2="118" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="122" text-anchor="end" class="chart-axis-label">₱613</text>
+                                <line x1="97" y1="70" x2="700" y2="70" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="74" text-anchor="end" class="chart-axis-label">₱655</text>
+                                <line x1="97" y1="22" x2="700" y2="22" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="26" text-anchor="end" class="chart-axis-label">₱698</text>
+        
+        <line x1="97" y1="214" x2="700" y2="214" class="chart-axis" vector-effect="non-scaling-stroke" />
+
+        
+                                <line x1="97" y1="214" x2="97" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="97" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="97" y="230" text-anchor="end"
+                      transform="rotate(-45 97 230)"
+                      class="chart-axis-label chart-axis-label-muted">Nov 2025</text>
+                                            <line x1="151.82" y1="214" x2="151.82" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="151.82" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="151.82" y="230" text-anchor="end"
+                      transform="rotate(-45 151.82 230)"
+                      class="chart-axis-label chart-axis-label-muted">Dec</text>
+                                            <line x1="206.64" y1="214" x2="206.64" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="206.64" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="206.64" y="230" text-anchor="end"
+                      transform="rotate(-45 206.64 230)"
+                      class="chart-axis-label chart-axis-label-muted">Jan</text>
+                                            <line x1="261.45" y1="214" x2="261.45" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="261.45" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="261.45" y="230" text-anchor="end"
+                      transform="rotate(-45 261.45 230)"
+                      class="chart-axis-label chart-axis-label-muted">Feb</text>
+                                            <line x1="316.27" y1="214" x2="316.27" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="316.27" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="316.27" y="230" text-anchor="end"
+                      transform="rotate(-45 316.27 230)"
+                      class="chart-axis-label chart-axis-label-muted">Mar</text>
+                                            <line x1="371.09" y1="214" x2="371.09" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="371.09" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="371.09" y="230" text-anchor="end"
+                      transform="rotate(-45 371.09 230)"
+                      class="chart-axis-label chart-axis-label-muted">Apr</text>
+                                            <line x1="425.91" y1="214" x2="425.91" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="425.91" y="230" text-anchor="end"
+                      transform="rotate(-45 425.91 230)"
+                      class="chart-axis-label ">May</text>
+                                            <line x1="480.73" y1="214" x2="480.73" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="480.73" y="230" text-anchor="end"
+                      transform="rotate(-45 480.73 230)"
+                      class="chart-axis-label ">Jun</text>
+                                            <line x1="535.55" y1="214" x2="535.55" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="535.55" y="230" text-anchor="end"
+                      transform="rotate(-45 535.55 230)"
+                      class="chart-axis-label ">Jul</text>
+                                            <line x1="590.36" y1="214" x2="590.36" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="590.36" y="230" text-anchor="end"
+                      transform="rotate(-45 590.36 230)"
+                      class="chart-axis-label ">Aug</text>
+                                            <line x1="645.18" y1="214" x2="645.18" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="645.18" y="230" text-anchor="end"
+                      transform="rotate(-45 645.18 230)"
+                      class="chart-axis-label ">Sep</text>
+                                            <line x1="700" y1="214" x2="700" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="700" y="230" text-anchor="end"
+                      transform="rotate(-45 700 230)"
+                      class="chart-axis-label ">Oct</text>
+                    
+        
+                                    <path class="chart-line" d="M 425.91 188.59 L 480.73 160.35 L 535.55 132.12 L 590.36 103.88 L 645.18 75.65 L 700 47.41" vector-effect="non-scaling-stroke" />
+            
+                            <circle cx="425.91" cy="188.59" r="4.5" class="chart-point" />
+                                                        <text x="425.91" y="175.59" text-anchor="start" class="chart-value-label">
+                        ₱550
+                    </text>
+                                            <circle cx="480.73" cy="160.35" r="4.5" class="chart-point" />
+                                                        <text x="480.73" y="147.35" text-anchor="middle" class="chart-value-label">
+                        ₱575
+                    </text>
+                                            <circle cx="535.55" cy="132.12" r="4.5" class="chart-point" />
+                                                        <text x="535.55" y="119.12" text-anchor="middle" class="chart-value-label">
+                        ₱600
+                    </text>
+                                            <circle cx="590.36" cy="103.88" r="4.5" class="chart-point" />
+                                                        <text x="590.36" y="90.88" text-anchor="middle" class="chart-value-label">
+                        ₱625
+                    </text>
+                                            <circle cx="645.18" cy="75.65" r="4.5" class="chart-point" />
+                                                        <text x="645.18" y="62.65" text-anchor="middle" class="chart-value-label">
+                        ₱650
+                    </text>
+                                            <circle cx="700" cy="47.41" r="4.5" class="chart-point" />
+                                                        <text x="700" y="34.41" text-anchor="end" class="chart-value-label">
+                        ₱675
+                    </text>
+                                        </svg>
+
+            <p class="mt-1 text-xs text-slate-400">The 12-month range, which labels every month.</p>
+    
+        </div>
+        <div class="chart-compact">
+            <svg viewBox="0 0 720 317" class="h-auto w-full" role="img"
+         aria-label="Line chart of Nov 2025, Dec 2025, Jan 2026, Feb 2026, Mar 2026, Apr 2026, May 2026, Jun 2026, Jul 2026, Aug 2026, Sep 2026, Oct 2026">
+        
+                                <line x1="97" y1="214" x2="700" y2="214" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="218" text-anchor="end" class="chart-axis-label">₱528</text>
+                                <line x1="97" y1="166" x2="700" y2="166" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="170" text-anchor="end" class="chart-axis-label">₱570</text>
+                                <line x1="97" y1="118" x2="700" y2="118" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="122" text-anchor="end" class="chart-axis-label">₱613</text>
+                                <line x1="97" y1="70" x2="700" y2="70" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="74" text-anchor="end" class="chart-axis-label">₱655</text>
+                                <line x1="97" y1="22" x2="700" y2="22" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="26" text-anchor="end" class="chart-axis-label">₱698</text>
+        
+        <line x1="97" y1="214" x2="700" y2="214" class="chart-axis" vector-effect="non-scaling-stroke" />
+
+        
+                                <line x1="97" y1="214" x2="97" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="97" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="97" y="230" text-anchor="end"
+                      transform="rotate(-45 97 230)"
+                      class="chart-axis-label chart-axis-label-muted">Nov 2025</text>
+                                            <line x1="151.82" y1="214" x2="151.82" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="151.82" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="151.82" y="230" text-anchor="end"
+                      transform="rotate(-45 151.82 230)"
+                      class="chart-axis-label chart-axis-label-muted">Dec</text>
+                                            <line x1="206.64" y1="214" x2="206.64" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="206.64" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="206.64" y="230" text-anchor="end"
+                      transform="rotate(-45 206.64 230)"
+                      class="chart-axis-label chart-axis-label-muted">Jan</text>
+                                            <line x1="261.45" y1="214" x2="261.45" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="261.45" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="261.45" y="230" text-anchor="end"
+                      transform="rotate(-45 261.45 230)"
+                      class="chart-axis-label chart-axis-label-muted">Feb</text>
+                                            <line x1="316.27" y1="214" x2="316.27" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="316.27" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="316.27" y="230" text-anchor="end"
+                      transform="rotate(-45 316.27 230)"
+                      class="chart-axis-label chart-axis-label-muted">Mar</text>
+                                            <line x1="371.09" y1="214" x2="371.09" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                            
+                <circle cx="371.09" cy="221" r="2.5" class="chart-gap" />
+                                        
+                <text x="371.09" y="230" text-anchor="end"
+                      transform="rotate(-45 371.09 230)"
+                      class="chart-axis-label chart-axis-label-muted">Apr</text>
+                                            <line x1="425.91" y1="214" x2="425.91" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="425.91" y="230" text-anchor="end"
+                      transform="rotate(-45 425.91 230)"
+                      class="chart-axis-label ">May</text>
+                                            <line x1="480.73" y1="214" x2="480.73" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="480.73" y="230" text-anchor="end"
+                      transform="rotate(-45 480.73 230)"
+                      class="chart-axis-label ">Jun</text>
+                                            <line x1="535.55" y1="214" x2="535.55" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="535.55" y="230" text-anchor="end"
+                      transform="rotate(-45 535.55 230)"
+                      class="chart-axis-label ">Jul</text>
+                                            <line x1="590.36" y1="214" x2="590.36" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="590.36" y="230" text-anchor="end"
+                      transform="rotate(-45 590.36 230)"
+                      class="chart-axis-label ">Aug</text>
+                                            <line x1="645.18" y1="214" x2="645.18" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="645.18" y="230" text-anchor="end"
+                      transform="rotate(-45 645.18 230)"
+                      class="chart-axis-label ">Sep</text>
+                                            <line x1="700" y1="214" x2="700" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="700" y="230" text-anchor="end"
+                      transform="rotate(-45 700 230)"
+                      class="chart-axis-label ">Oct</text>
+                    
+        
+                                    <path class="chart-line" d="M 425.91 188.59 L 480.73 160.35 L 535.55 132.12 L 590.36 103.88 L 645.18 75.65 L 700 47.41" vector-effect="non-scaling-stroke" />
+            
+                            <circle cx="425.91" cy="188.59" r="4.5" class="chart-point" />
+                                                        <text x="425.91" y="175.59" text-anchor="start" class="chart-value-label">
+                        ₱550
+                    </text>
+                                            <circle cx="480.73" cy="160.35" r="4.5" class="chart-point" />
+                                                        <text x="480.73" y="147.35" text-anchor="middle" class="chart-value-label">
+                        ₱575
+                    </text>
+                                            <circle cx="535.55" cy="132.12" r="4.5" class="chart-point" />
+                                                        <text x="535.55" y="119.12" text-anchor="middle" class="chart-value-label">
+                        ₱600
+                    </text>
+                                            <circle cx="590.36" cy="103.88" r="4.5" class="chart-point" />
+                                                        <text x="590.36" y="90.88" text-anchor="middle" class="chart-value-label">
+                        ₱625
+                    </text>
+                                            <circle cx="645.18" cy="75.65" r="4.5" class="chart-point" />
+                                                        <text x="645.18" y="62.65" text-anchor="middle" class="chart-value-label">
+                        ₱650
+                    </text>
+                                            <circle cx="700" cy="47.41" r="4.5" class="chart-point" />
+                                                        <text x="700" y="34.41" text-anchor="end" class="chart-value-label">
+                        ₱675
+                    </text>
+                                        </svg>
+
+            <p class="mt-1 text-xs text-slate-400">The 12-month range, which labels every month.</p>
+    
+        </div>
+    </div>
+</div>
+<div class="card">
+    <h3>Unit Cost Trend</h3>
+    <p class="sub">The wide, full-width chart (labels at the 11px step).</p>
+    <svg viewBox="0 0 720 317" class="h-auto w-full" role="img"
+         aria-label="Line chart of May 2026, Jun 2026, Jul 2026, Aug 2026, Sep 2026, Oct 2026">
+        
+                                <line x1="97" y1="214" x2="700" y2="214" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="218" text-anchor="end" class="chart-axis-label">₱4.75</text>
+                                <line x1="97" y1="166" x2="700" y2="166" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="170" text-anchor="end" class="chart-axis-label">₱5.22</text>
+                                <line x1="97" y1="118" x2="700" y2="118" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="122" text-anchor="end" class="chart-axis-label">₱5.70</text>
+                                <line x1="97" y1="70" x2="700" y2="70" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="74" text-anchor="end" class="chart-axis-label">₱6.18</text>
+                                <line x1="97" y1="22" x2="700" y2="22" class="chart-grid" vector-effect="non-scaling-stroke" />
+            <text x="87" y="26" text-anchor="end" class="chart-axis-label">₱6.65</text>
+        
+        <line x1="97" y1="214" x2="700" y2="214" class="chart-axis" vector-effect="non-scaling-stroke" />
+
+        
+                                <line x1="97" y1="214" x2="97" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="97" y="230" text-anchor="end"
+                      transform="rotate(-45 97 230)"
+                      class="chart-axis-label ">May 2026</text>
+                                            <line x1="217.6" y1="214" x2="217.6" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="217.6" y="230" text-anchor="end"
+                      transform="rotate(-45 217.6 230)"
+                      class="chart-axis-label ">Jun 2026</text>
+                                            <line x1="338.2" y1="214" x2="338.2" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="338.2" y="230" text-anchor="end"
+                      transform="rotate(-45 338.2 230)"
+                      class="chart-axis-label ">Jul 2026</text>
+                                            <line x1="458.8" y1="214" x2="458.8" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="458.8" y="230" text-anchor="end"
+                      transform="rotate(-45 458.8 230)"
+                      class="chart-axis-label ">Aug 2026</text>
+                                            <line x1="579.4" y1="214" x2="579.4" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="579.4" y="230" text-anchor="end"
+                      transform="rotate(-45 579.4 230)"
+                      class="chart-axis-label ">Sep 2026</text>
+                                            <line x1="700" y1="214" x2="700" y2="218" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                        
+                <text x="700" y="230" text-anchor="end"
+                      transform="rotate(-45 700 230)"
+                      class="chart-axis-label ">Oct 2026</text>
+                    
+        
+                                    <path class="chart-line" d="M 97 188.59 L 217.6 163.38 L 338.2 97.83 L 458.8 47.41 L 579.4 77.66 L 700 87.75" vector-effect="non-scaling-stroke" />
+            
+                            <circle cx="97" cy="188.59" r="4.5" class="chart-point" />
+                                                        <text x="97" y="175.59" text-anchor="start" class="chart-value-label">
+                        ₱5.00
+                    </text>
+                                            <circle cx="217.6" cy="163.38" r="4.5" class="chart-point" />
+                                                        <text x="217.6" y="150.38" text-anchor="middle" class="chart-value-label">
+                        ₱5.25
+                    </text>
+                                            <circle cx="338.2" cy="97.83" r="4.5" class="chart-point" />
+                                                        <text x="338.2" y="84.83" text-anchor="middle" class="chart-value-label">
+                        ₱5.90
+                    </text>
+                                            <circle cx="458.8" cy="47.41" r="4.5" class="chart-point" />
+                                                        <text x="458.8" y="34.41" text-anchor="middle" class="chart-value-label">
+                        ₱6.40
+                    </text>
+                                            <circle cx="579.4" cy="77.66" r="4.5" class="chart-point" />
+                                                        <text x="579.4" y="64.66" text-anchor="middle" class="chart-value-label">
+                        ₱6.10
+                    </text>
+                                            <circle cx="700" cy="87.75" r="4.5" class="chart-point" />
+                                                        <text x="700" y="74.75" text-anchor="end" class="chart-value-label">
+                        ₱6.00
+                    </text>
+                                        </svg>
+
+            <p class="mt-1 text-xs text-slate-400">Unit cost recorded in each month.</p>
+    
+</div>
+</body>
+</html>

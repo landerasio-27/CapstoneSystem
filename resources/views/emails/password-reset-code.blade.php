@@ -1,0 +1,77 @@
+{{--
+    The mail that carries a password reset code.
+
+    Written for a mail client rather than for the portal: one column, tables
+    instead of layout, and the colours of the sign-in screen kept — the office
+    reads this on a phone as often as on a desktop, and the code has to be the
+    first thing they can see and copy.
+
+    Expects: $code, $minutesToExpire, $accountName.
+--}}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Password reset code</title>
+</head>
+<body style="margin:0; padding:0; background:#F6F8F7;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6F8F7; padding:28px 12px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                       style="max-width:520px; background:#FFFFFF; border:1px solid #E4E9E6; border-radius:14px;">
+                    <tr>
+                        <td style="padding:26px 28px 6px;">
+                            <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; font-weight:bold; letter-spacing:1.2px; text-transform:uppercase; color:#243043;">
+                                Isabela State University
+                            </p>
+                            <p style="margin:4px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#6B7280;">
+                                Cauayan Campus &middot; Supply Management System
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:18px 28px 0;">
+                            <h1 style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:20px; color:#172033;">
+                                Your password reset code
+                            </h1>
+                            <p style="margin:10px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:14px; line-height:1.6; color:#4B5563;">
+                                Hello {{ $accountName }}, we received a request to reset the password of your
+                                ISU Supply Management System account. Type the code below on the reset page to continue.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:20px 28px;">
+                            <div style="border:1px solid #DCE7DF; border-radius:12px; background:#F4F9F5; padding:18px 12px; text-align:center;">
+                                <span style="font-family:'Courier New',Courier,monospace; font-size:34px; font-weight:bold; letter-spacing:10px; color:#087A16;">{{ $code }}</span>
+                            </div>
+                            <p style="margin:12px 0 0; font-family:Arial,Helvetica,sans-serif; font-size:13px; color:#6B7280; text-align:center;">
+                                This code stands for {{ $minutesToExpire }} minutes. After that, ask for a new one.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 28px 26px;">
+                            <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:1.6; color:#6B7280;">
+                                If you did not ask for this, no one can open your account with this mail and you can
+                                ignore it — your present password still stands. To change it now, follow the reset
+                                page in the portal and ask for a new code.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:16px 28px 24px; border-top:1px solid #EEF2EF;">
+                            <p style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; line-height:1.6; color:#9CA3AF;">
+                                This code was sent by the ISU Cauayan Campus Supply Management System.
+                                Never share it — the office will not ask you for it.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
