@@ -1,12 +1,16 @@
+
 @echo off
-title ISU Web Server
-set "PATH=C:\tools\php-8.3;C:\tools\composer;%PATH%"
+title CapstoneSystem - Laravel Web Server
+
 cd /d "%~dp0"
-echo ============================================
-echo   ISU Supply System - WEB SERVER
-echo   http://127.0.0.1:8000
-echo   Keep this window OPEN while using the system.
-echo ============================================
-echo.
-php artisan serve --host=0.0.0.0 --port=8000
+
+if not exist "artisan" (
+    echo ERROR: Laravel artisan file not found.
+    echo Make sure this script is inside the Laravel project root.
+    pause
+    exit /b 1
+)
+
+C:\xampp\php\php.exe artisan serve --host=0.0.0.0 --port=8000
+
 pause

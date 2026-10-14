@@ -123,26 +123,17 @@
             <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Automatically Classified As</p>
             <div class="mt-2 flex flex-wrap items-center gap-2" data-panel-groups></div>
             <p class="mt-2 text-xs text-slate-400" data-panel-note></p>
-        </div>        {{-- Signatories + IAR details, side by side. Blank signatory falls back
-             to the linked teacher's name. "Requested By" only prints on the RIS
-             layout; "Received By" prints on PAR, ICS and RIS. Shown whenever the
-             transaction can produce one of those three papers — including the
-             general form, where no type is fixed and the items decide. --}}
+        </div>        {{-- Signatories + IAR details, side by side. The papers print the
+             custodian's own name on the "Requested By" / "Received By" lines,
+             so those are not captured here. Shown whenever the transaction can
+             produce one of those three papers — including the general form,
+             where no type is fixed and the items decide. --}}
 
         @if (in_array($type, ['PAR', 'ICS', 'RIS'], true) || $type === null)
             <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
             <div class="rounded-lg bg-slate-50 p-4">
-                <h3 class="mb-1 text-sm font-semibold text-slate-700">Signatories</h3>
-                <p class="mb-3 text-xs text-slate-400">Leave blank to use the custodian's name.</p>
+                <h3 class="mb-3 text-sm font-semibold text-slate-700">Signatories</h3>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-slate-700">Requested By</label>
-                        <input type="text" name="requested_by" value="{{ $v('requested_by') }}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-slate-700">Received By</label>
-                        <input type="text" name="received_by" value="{{ $v('received_by') }}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                    </div>
                     <div class="sm:col-span-2">
                         <label class="mb-1 block text-sm font-medium text-slate-700">Inspection Officer</label>
                         <input type="text" name="inspection_officer" value="{{ $v('inspection_officer') }}"

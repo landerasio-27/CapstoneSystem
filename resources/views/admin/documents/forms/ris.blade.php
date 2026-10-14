@@ -3,10 +3,20 @@
     $minRows = 10;
     $pad = max(0, $minRows - $items->count());
     $requestedBy = $document->requested_by ?? $document->custodian_name;
+    // The requester and the receiver are the custodian the paper is filed
+    // under, so both carry that record's position.
     $requestedDes = $document->custodian_position ?: $document->teacher?->position;
     $approvedBy = $document->approvedBy?->name;
+    $approvedDes = $document->approvedBy?->position;
     $issuedBy = $document->issuedBy?->name ?? $document->preparedBy?->name;
+    // The office that issues holds its title on its own account; until it says
+    // which one, the paper signs under the supply office's own wording — the
+    // same title the PAR and the ICS print for that office.
+    $issuedDes = $document->issuedBy?->position
+        ?: $document->preparedBy?->position
+        ?: 'Administrative Officer I (Supply Officer I)';
     $receivedBy = $document->received_by ?? $document->custodian_name;
+    $receivedDes = $document->custodian_position ?: $document->teacher?->position;
 @endphp
 
 <div class="form-head">
@@ -98,9 +108,9 @@
     <tr class="rowh">
         <td class="b">Designation:</td>
         <td class="tc">{{ $requestedDes }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td class="tc">{{ $approvedDes }}</td>
+        <td class="tc">{{ $issuedDes }}</td>
+        <td class="tc">{{ $receivedDes }}</td>
     </tr>
     <tr class="rowh">
         <td class="b">Date:</td>

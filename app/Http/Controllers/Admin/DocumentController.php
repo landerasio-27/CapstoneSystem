@@ -232,10 +232,6 @@ class DocumentController extends Controller
             'responsibility_center_code' => ['nullable', 'string', 'max:255'],
             'purpose' => ['nullable', 'string'],
 
-            // Signatory overrides (PAR/ICS/RIS)
-            'requested_by' => ['nullable', 'string', 'max:255'],
-            'received_by' => ['nullable', 'string', 'max:255'],
-
             'items' => ['required', 'array', 'min:1'],
             // Every line names a real inventory record: the picker is the only
             // way in, and the name, unit, cost and classification are read from
@@ -256,7 +252,6 @@ class DocumentController extends Controller
                 'requisition_office', 'requisition_center_code', 'date_inspected', 'date_received', 'acceptance_status',
                 'inspection_officer',
                 'division', 'office', 'responsibility_center_code', 'purpose',
-                'requested_by', 'received_by',
             ])->filter(fn ($v) => $v !== null && $v !== '')->all();
 
             // A typed-in number names one paper; the rest of a split transaction
@@ -399,8 +394,6 @@ class DocumentController extends Controller
             'office' => ['nullable', 'string', 'max:255'],
             'responsibility_center_code' => ['nullable', 'string', 'max:255'],
             'purpose' => ['nullable', 'string'],
-            'requested_by' => ['nullable', 'string', 'max:255'],
-            'received_by' => ['nullable', 'string', 'max:255'],
             'items' => ['required', 'array', 'min:1'],
             // Every line names a real inventory record — see store().
             'items.*.item' => ['required', 'string', $this->existingItemRule()],
@@ -424,8 +417,10 @@ class DocumentController extends Controller
                 'requisition_office', 'requisition_center_code', 'date_inspected', 'date_received', 'acceptance_status',
                 'inspection_officer',
                 'division', 'office', 'responsibility_center_code', 'purpose',
-                'requested_by', 'received_by',
             ];
+            // The signatory names are not captured on this form any more: they are
+            // left out of the header so an edit keeps whatever a record already
+            // carries instead of clearing it.
             $header = collect($headerKeys)->mapWithKeys(fn ($k) => [$k => $data[$k] ?? null])->all();
 
             // entity_name is NOT NULL in the schema, so leaving the field blank
