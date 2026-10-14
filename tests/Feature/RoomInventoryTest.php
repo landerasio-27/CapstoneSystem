@@ -128,7 +128,7 @@ class RoomInventoryTest extends TestCase
             ])
             ->assertRedirect()
             ->assertSessionHasNoErrors()
-            ->assertSessionHas('success', 'Dell OptiPlex Desktop placed in A101.');
+            ->assertSessionHas('success', 'Dell OptiPlex Desktop placed in Computer Laboratory.');
 
         // The one record now names the room — nothing was copied.
         $this->assertSame($room->id, $item->refresh()->room_id);
@@ -184,7 +184,7 @@ class RoomInventoryTest extends TestCase
         $this->actingAs($this->admin)
             ->post(route('admin.rooms.items.store', $room), ['item' => 'equipment:' . $item->id])
             ->assertRedirect()
-            ->assertSessionHas('error', 'Dell OptiPlex Desktop is already in A101.');
+            ->assertSessionHas('error', 'Dell OptiPlex Desktop is already in Computer Laboratory.');
 
         // Creating an item in a room records its initial placement; this
         // refused request must not add a second movement.
@@ -207,8 +207,8 @@ class RoomInventoryTest extends TestCase
 
     public function test_an_item_is_transferred_between_rooms_and_both_rooms_read_themselves(): void
     {
-        $from = $this->room(['code' => 'A101']);
-        $to = $this->room(['code' => 'B102']);
+        $from = $this->room(['code' => 'A101', 'name' => 'Computer Laboratory 1']);
+        $to = $this->room(['code' => 'B102', 'name' => 'Computer Laboratory 2']);
         $item = $this->equipment(['room_id' => $from->id]);
 
         $this->actingAs($this->admin)
@@ -220,7 +220,7 @@ class RoomInventoryTest extends TestCase
             ])
             ->assertRedirect()
             ->assertSessionHasNoErrors()
-            ->assertSessionHas('success', 'Dell OptiPlex Desktop transferred from A101 to B102.');
+            ->assertSessionHas('success', 'Dell OptiPlex Desktop transferred from Computer Laboratory 1 to Computer Laboratory 2.');
 
         // One update, so it leaves one room and arrives in the other at once.
         $this->assertSame($to->id, $item->refresh()->room_id);
@@ -249,14 +249,14 @@ class RoomInventoryTest extends TestCase
         $this->assertStringContainsString('Dell OptiPlex Desktop', $this->inventoryHtml($arrived));
         $this->assertStringContainsString('Transferred', $this->historyHtml($arrived));
         $this->assertStringContainsString('Relocation of item', $this->historyHtml($arrived));
-        $this->assertStringContainsString('A101', $this->historyHtml($arrived));
+        $this->assertStringContainsString('Computer Laboratory 1', $this->historyHtml($arrived));
         $this->assertStringContainsString('Moved with the new laboratory layout.', $this->historyHtml($arrived));
     }
 
     public function test_a_transfer_must_come_from_this_room_and_go_somewhere_else(): void
     {
-        $room = $this->room(['code' => 'A101']);
-        $other = $this->room(['code' => 'A102']);
+        $room = $this->room(['code' => 'A101', 'name' => 'Computer Laboratory 1']);
+        $other = $this->room(['code' => 'A102', 'name' => 'Computer Laboratory 2']);
         $elsewhere = $this->equipment(['room_id' => $other->id]);
 
         // An item sitting in another room cannot be transferred out of this one:
@@ -268,7 +268,7 @@ class RoomInventoryTest extends TestCase
                 'reason' => 'relocation',
             ])
             ->assertRedirect()
-            ->assertSessionHas('error', 'Dell OptiPlex Desktop is not in A101.');
+            ->assertSessionHas('error', 'Dell OptiPlex Desktop is not in Computer Laboratory 1.');
 
         $this->assertSame($other->id, $elsewhere->refresh()->room_id);
         $this->assertSame(1, RoomMovement::count());
@@ -419,7 +419,7 @@ class RoomInventoryTest extends TestCase
         $this->actingAs($this->admin)
             ->get(route('admin.teachers.show', $custodian) . '?panel=equipment')
             ->assertOk()
-            ->assertSee('B102')
+            ->assertSee('Lecture Room 2')
             ->assertSee($item->item_code);
     }
 

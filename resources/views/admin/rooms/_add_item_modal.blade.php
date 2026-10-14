@@ -28,7 +28,7 @@
                 <div>
                     <h3 class="text-base font-semibold text-slate-800">Add Inventory to Room</h3>
                     <p class="mt-1 text-sm text-slate-500">
-                        The item is added to {{ $room->code }} &mdash; {{ $room->name }} by naming this room as its location. No duplicate record is created.
+                        The item is added to {{ $room->name }} by naming this room as its location. No duplicate record is created.
                     </p>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                         <optgroup label="Equipment / Property">
                             @foreach ($assignableEquipment as $item)
                                 <option value="equipment:{{ $item->id }}" data-kind="equipment" data-quantity="{{ $item->quantity_on_hand }} {{ $item->unit }}" @selected(old('_form') === 'add' && old('item') === 'equipment:'.$item->id)>
-                                    {{ $item->item_code }} &mdash; {{ $item->name }}@if ($item->room) (currently in {{ $item->room->code }})@endif
+                                    {{ $item->item_code }} &mdash; {{ $item->name }}@if ($item->room) (currently in {{ $item->room->name }})@endif
                                 </option>
                             @endforeach
                         </optgroup>
@@ -93,7 +93,7 @@
                         <optgroup label="Supplies">
                             @foreach ($assignableSupplies as $item)
                                 <option value="supply:{{ $item->id }}" data-kind="supply" data-quantity="{{ $item->quantity_on_hand }} {{ $item->unit }}" @selected(old('_form') === 'add' && old('item') === 'supply:'.$item->id)>
-                                    {{ $item->item_code }} &mdash; {{ $item->name }}@if ($item->room) (currently in {{ $item->room->code }})@endif
+                                    {{ $item->item_code }} &mdash; {{ $item->name }}@if ($item->room) (currently in {{ $item->room->name }})@endif
                                 </option>
                             @endforeach
                         </optgroup>
@@ -104,7 +104,7 @@
                 <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <label for="add-item-room" class="mb-1 block text-sm font-medium text-slate-700">Room</label>
-                        <input id="add-item-room" type="text" value="{{ $room->code }} — {{ $room->name }}" disabled
+                        <input id="add-item-room" type="text" value="{{ $room->name }}" disabled
                                class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
                     </div>
 

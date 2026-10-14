@@ -71,7 +71,7 @@
                             <select name="room_id" class="rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
                                 <option value="">All rooms</option>
                                 @foreach ($rooms as $room)
-                                    <option value="{{ $room->id }}">{{ $room->code }}</option>
+                                    <option value="{{ $room->id }}">{{ $room->name }}</option>
                                 @endforeach
                             </select>
                         @endif

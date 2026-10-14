@@ -20,7 +20,7 @@
                 <div>
                     <h3 class="text-base font-semibold text-slate-800">Transfer Item</h3>
                     <p class="mt-1 text-sm text-slate-500">
-                        Move an item out of {{ $room->code }} and into another room. Its current room is updated; nothing is copied and no paper is rewritten.
+                        Move an item out of {{ $room->name }} and into another room. Its current room is updated; nothing is copied and no paper is rewritten.
                     </p>
                 </div>
             </div>
@@ -62,7 +62,7 @@
                 <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <label for="transfer-current-room" class="mb-1 block text-sm font-medium text-slate-700">Current Room</label>
-                        <input id="transfer-current-room" type="text" value="{{ $room->code }} — {{ $room->name }}" disabled
+                        <input id="transfer-current-room" type="text" value="{{ $room->name }}" disabled
                                class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
                     </div>
 
@@ -72,7 +72,7 @@
                             <option value="">Choose a room&hellip;</option>
                             @foreach ($destinations as $destination)
                                 <option value="{{ $destination->id }}" @selected((string) old('to_room_id') === (string) $destination->id)>
-                                    {{ $destination->code }} &mdash; {{ $destination->name }}
+                                    {{ $destination->name }}
                                 </option>
                             @endforeach
                         </select>

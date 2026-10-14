@@ -84,7 +84,7 @@
             <select name="room" class="{{ $select }}">
                 <option value="">Room</option>
                 @foreach ($rooms as $room)
-                    <option value="{{ $room->id }}" @selected((string) request('room') === (string) $room->id)>{{ $room->code }} &mdash; {{ $room->name }}</option>
+                    <option value="{{ $room->id }}" @selected((string) request('room') === (string) $room->id)>{{ $room->name }}</option>
                 @endforeach
             </select>
 
@@ -152,7 +152,7 @@
                                  items carry. --}}
                             <x-classification-badge :type="$doc->type" />
                         </td>
-                        <td class="px-4 py-3 text-slate-500">{{ $doc->custodian_name ?: '—' }} {{ $doc->room ? '/ '.$doc->room->code : '' }}</td>
+                        <td class="px-4 py-3 text-slate-500">{{ $doc->custodian_name ?: '—' }} {{ $doc->room ? '/ '.$doc->room->name : '' }}</td>
                         <td class="px-4 py-3">
                             @php
                                 $badges = ['draft' => 'bg-slate-100 text-slate-600', 'approved' => 'bg-sky-50 text-sky-700', 'issued' => 'bg-brand-50 text-brand-700'];

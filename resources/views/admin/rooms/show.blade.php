@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', $room->code . ' — ' . $room->name)
+@section('title', $room->name)
 
 @section('content')
     @php
@@ -36,7 +36,7 @@
 
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
-                        <h2 class="text-lg font-semibold text-slate-800">{{ $room->code }} <span class="font-normal text-slate-500">{{ $room->name }}</span></h2>
+                        <h2 class="text-lg font-semibold text-slate-800">{{ $room->name }}</h2>
 
                         @if ($room->is_active)
                             <span class="rounded-full bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700">Active</span>
@@ -77,7 +77,6 @@
 
         <h3 class="mt-6 text-sm font-semibold text-slate-800">Room Information</h3>
         <dl class="mt-3 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
-            <div><dt class="text-slate-500">Room Number</dt><dd class="font-medium text-slate-800">{{ $room->code }}</dd></div>
             <div><dt class="text-slate-500">Room Name</dt><dd class="font-medium text-slate-800">{{ $room->name }}</dd></div>
             <div><dt class="text-slate-500">Building</dt><dd class="font-medium text-slate-800">{{ $room->building ?: '—' }}</dd></div>
             <div><dt class="text-slate-500">Floor</dt><dd class="font-medium text-slate-800">{{ $room->floor ?: '—' }}</dd></div>
@@ -417,8 +416,8 @@
                                 <td class="whitespace-nowrap px-2 py-2">
                                     <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $tone }}">{{ $movement->actionLabel() }}</span>
                                 </td>
-                                <td class="whitespace-nowrap px-2 py-2 text-slate-500">{{ $movement->fromRoom?->code ?? '—' }}</td>
-                                <td class="whitespace-nowrap px-2 py-2 text-slate-500">{{ $movement->toRoom?->code ?? '—' }}</td>
+                                <td class="whitespace-nowrap px-2 py-2 text-slate-500">{{ $movement->fromRoom?->name ?? '—' }}</td>
+                                <td class="whitespace-nowrap px-2 py-2 text-slate-500">{{ $movement->toRoom?->name ?? '—' }}</td>
                                 <td class="whitespace-nowrap px-2 py-2 text-slate-500">
                                     {{ $movement->reasonLabel() ?? '—' }}
                                     @if ($movement->notes)

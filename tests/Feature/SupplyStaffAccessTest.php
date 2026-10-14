@@ -207,20 +207,20 @@ class SupplyStaffAccessTest extends TestCase
 
     public function test_a_supply_staff_account_can_add_edit_and_delete_a_room(): void
     {
+        // The room is named, not numbered: the form carries no code, so the
+        // row's own is minted for it.
         $this->actingAs($this->staff)
             ->post('/admin/rooms', [
-                'code' => 'B204',
                 'name' => 'Supply Storage Room',
                 'building' => 'Main Building B',
                 'floor' => '2nd Floor',
             ])
             ->assertRedirect(route('admin.rooms.index'));
 
-        $room = Room::query()->where('code', 'B204')->firstOrFail();
+        $room = Room::query()->where('name', 'Supply Storage Room')->firstOrFail();
 
         $this->actingAs($this->staff)
             ->put("/admin/rooms/{$room->id}", [
-                'code' => 'B204',
                 'name' => 'Supply Storage Room 2',
                 'building' => 'Main Building B',
                 'floor' => '2nd Floor',

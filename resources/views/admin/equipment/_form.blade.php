@@ -78,7 +78,7 @@
         <select name="room_id" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
             <option value="">No room</option>
             @foreach ($rooms as $room)
-                <option value="{{ $room->id }}" @selected(old('room_id', $equipment->room_id ?? '') == $room->id)>{{ $room->code }} &mdash; {{ $room->name }}</option>
+                <option value="{{ $room->id }}" @selected(old('room_id', $equipment->room_id ?? '') == $room->id)>{{ $room->name }}</option>
             @endforeach
         </select>
         @error('room_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

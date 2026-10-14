@@ -139,10 +139,11 @@ class RoomDetailsTest extends TestCase
         $this->assertStringNotContainsString('<table', $html);
         $this->assertStringContainsString('Open Room', $html);
 
-        // The card carries the room, its department and its kind...
+        // The card carries the room, its department and its kind. The number a
+        // room used to be filed under is retired, so it is on no card at all.
         $card = $this->cardFor($html, 'A101');
-        $this->assertStringContainsString('A101', $card);
         $this->assertStringContainsString('Computer Laboratory 1', $card);
+        $this->assertStringNotContainsString('A101', $html);
         $this->assertStringContainsString('College of Computing Studies', $card);
         $this->assertStringContainsString('Laboratory', $card);
         $this->assertStringContainsString('Active', $card);
@@ -162,18 +163,25 @@ class RoomDetailsTest extends TestCase
         $this->assertStringContainsString(route('admin.rooms.show', $empty), $emptyCard);
     }
 
-    public function test_rooms_can_be_searched_by_number_name_building_and_department(): void
+    public function test_rooms_can_be_searched_by_name_building_and_department(): void
     {
         $lab = $this->room(['code' => 'A101', 'name' => 'Computer Laboratory 1', 'building' => 'CCS Building', 'department' => 'College of Computing Studies']);
         $other = $this->room(['code' => 'C301', 'name' => 'Science Hall Annex', 'building' => 'Science Hall', 'department' => 'College of Education', 'type' => 'classroom']);
 
-        foreach (['A101', 'Computer Laboratory', 'CCS Building', 'College of Computing Studies'] as $term) {
+        foreach (['Computer Laboratory', 'CCS Building', 'College of Computing Studies'] as $term) {
             $this->actingAs($this->admin)
                 ->get('/admin/rooms?search=' . urlencode($term))
                 ->assertOk()
                 ->assertSee('data-href="' . route('admin.rooms.show', $lab) . '"', false)
                 ->assertDontSee('data-href="' . route('admin.rooms.show', $other) . '"', false);
         }
+
+        // The room number is not a way in any more: the office never sees one to
+        // search by, so one typed into the box finds nothing.
+        $this->actingAs($this->admin)
+            ->get('/admin/rooms?search=A101')
+            ->assertOk()
+            ->assertDontSee('data-href="' . route('admin.rooms.show', $lab) . '"', false);
 
         // The kind is matched by the word the office uses, not the value stored
         // for it: "storage" finds a store room whose name never says so.
@@ -249,12 +257,20 @@ class RoomDetailsTest extends TestCase
             'Sorting by most supplies did not put the room holding stock first.',
         );
 
-        // Room Number Z–A reverses the register's own order.
-        $html = $this->actingAs($this->admin)->get('/admin/rooms?sort=code_desc')->assertOk()->getContent();
+        // Rooms are listed by name, so Room Name A–Z and Z–A are the two ways
+        // through the register now that the number is retired.
+        $html = $this->actingAs($this->admin)->get('/admin/rooms?sort=name_asc')->assertOk()->getContent();
         $this->assertLessThan(
-            strpos($html, 'A101'),
-            strpos($html, 'B101'),
-            'Sorting by room number Z–A did not reverse the order.',
+            strpos($html, 'Quiet Room'),
+            strpos($html, 'Busy Room'),
+            'Sorting by room name A-Z did not put Busy Room first.',
+        );
+
+        $html = $this->actingAs($this->admin)->get('/admin/rooms?sort=name_desc')->assertOk()->getContent();
+        $this->assertLessThan(
+            strpos($html, 'Busy Room'),
+            strpos($html, 'Quiet Room'),
+            'Sorting by room name Z-A did not reverse the order.',
         );
     }
 
@@ -264,6 +280,55 @@ class RoomDetailsTest extends TestCase
             ->assertOk()
             ->assertSee('No rooms yet')
             ->assertSee('New Room');
+    }
+
+    /**
+     * A room is added and corrected by name alone: the number it used to be
+     * filed under is no longer asked for, and an edit never disturbs it.
+     */
+    public function test_a_room_is_created_and_edited_without_a_room_number(): void
+    {
+        foreach (['/admin/rooms/create', '/admin/rooms'] as $url) {
+            // The register's own two ways in: the form asks for the room, not a
+            // number for it.
+            $this->actingAs($this->admin)->get($url)
+                ->assertOk()
+                ->assertDontSee('Room Number')
+                ->assertDontSee('name="code"', false);
+        }
+
+        $this->actingAs($this->admin)
+            ->post('/admin/rooms', [
+                'name' => 'Audio-Visual Room',
+                'building' => 'Main Building A',
+                'floor' => '2nd Floor',
+                'type' => 'other',
+            ])
+            ->assertRedirect(route('admin.rooms.index'))
+            ->assertSessionHasNoErrors();
+
+        $room = Room::latest('id')->firstOrFail();
+
+        $this->assertSame('Audio-Visual Room', $room->name);
+        // The row still carries one, minted for it, because older records are
+        // keyed by it — it is simply never printed.
+        $this->assertNotSame('', (string) $room->code);
+
+        $code = $room->code;
+
+        $this->actingAs($this->admin)->get("/admin/rooms/{$room->id}/edit")
+            ->assertOk()
+            ->assertSee('Audio-Visual Room')
+            ->assertDontSee('Room Number');
+
+        $this->actingAs($this->admin)
+            ->put("/admin/rooms/{$room->id}", ['name' => 'Audio-Visual Room 2', 'type' => 'other'])
+            ->assertRedirect(route('admin.rooms.index'))
+            ->assertSessionHasNoErrors();
+
+        $room->refresh();
+        $this->assertSame('Audio-Visual Room 2', $room->name);
+        $this->assertSame($code, $room->code, 'An edit must not disturb the code the room is filed under.');
     }
 
     // -----------------------------------------------------------------------
@@ -290,8 +355,9 @@ class RoomDetailsTest extends TestCase
         $this->actingAs($this->admin)->get(route('admin.rooms.show', $room))
             ->assertOk()
             ->assertSee('Room Information')
-            ->assertSee('Room Number')
-            ->assertSee('A101')
+            // The room number is retired: the page reads by name and prints none.
+            ->assertDontSee('Room Number')
+            ->assertDontSee('A101')
             ->assertSee('Computer Laboratory 1')
             ->assertSee('CCS Building')
             ->assertSee('2nd Floor')

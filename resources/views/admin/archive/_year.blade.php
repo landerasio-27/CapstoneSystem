@@ -57,7 +57,7 @@
                              plain text, so nothing opens the live register. --}}
                         <td class="px-4 py-3 font-medium text-slate-800">{{ $document->document_no }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ $document->type }}</td>
-                        <td class="px-4 py-3 text-slate-500">{{ $document->custodian_name ?: '—' }}{{ $document->room ? ' / '.$document->room->code : '' }}</td>
+                        <td class="px-4 py-3 text-slate-500">{{ $document->custodian_name ?: '—' }}{{ $document->room ? ' / '.$document->room->name : '' }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ ucfirst($document->status) }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ $document->document_date->format('M d, Y') }}</td>
                         <td class="px-4 py-3 text-right">

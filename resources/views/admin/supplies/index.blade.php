@@ -53,7 +53,7 @@
                         <td class="px-4 py-3 text-slate-500">{{ $supply->item_code }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ $supply->category ?? '—' }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ $supply->quantity_on_hand }} {{ $supply->unit }}</td>
-                        <td class="px-4 py-3 text-slate-500">{{ $supply->room?->code ?? '—' }}</td>
+                        <td class="px-4 py-3 text-slate-500">{{ $supply->room?->name ?? '—' }}</td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('admin.supplies.edit', $supply) }}" class="text-brand-600 hover:underline">Edit</a>

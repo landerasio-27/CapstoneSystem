@@ -54,7 +54,7 @@
                             <x-classification-badge :type="$item->classification()" class="ml-1 align-middle" />
                         </td>
                         <td class="px-4 py-3 text-slate-500">{{ $item->item_code }}</td>
-                        <td class="px-4 py-3 text-slate-500">{{ $item->room?->code ?? '—' }}</td>
+                        <td class="px-4 py-3 text-slate-500">{{ $item->room?->name ?? '—' }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ $item->custodian_name ?: '—' }}</td>
                         <td class="px-4 py-3 text-slate-500">{{ $item->quantity_on_hand }}</td>
                         <td class="px-4 py-3">

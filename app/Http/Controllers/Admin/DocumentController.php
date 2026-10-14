@@ -96,7 +96,7 @@ class DocumentController extends Controller
                 ->filter()->unique()->sort()->values(),
             // Every room the register can be read by: a room's own page links
             // here for the papers raised for it.
-            'rooms' => Room::orderBy('code')->get(),
+            'rooms' => Room::orderBy('name')->get(),
         ]);
     }
 

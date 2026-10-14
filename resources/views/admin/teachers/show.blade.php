@@ -329,7 +329,7 @@
                                              record read from the room's folder too. --}}
                                         <td class="px-3 py-3 text-slate-500">
                                             @if ($item->room)
-                                                <a href="{{ route('admin.rooms.show', $item->room) }}" class="hover:text-brand-800">{{ $item->room->code }}</a>
+                                                <a href="{{ route('admin.rooms.show', $item->room) }}" class="hover:text-brand-800">{{ $item->room->name }}</a>
                                             @else
                                                 —
                                             @endif

@@ -124,12 +124,13 @@ class RoomMovement extends Model
      */
     public function description(): string
     {
-        $target = $this->toRoom?->code ?? $this->fromRoom?->code;
+        // A room reads by its name: the number it used to file under is retired.
+        $target = $this->toRoom?->name ?? $this->fromRoom?->name;
 
         return match ($this->action) {
             'added' => "Placed in {$target}",
             'removed' => "Taken out of {$target}",
-            default => 'Transferred from '.($this->fromRoom?->code ?? '—').' to '.($this->toRoom?->code ?? '—'),
+            default => 'Transferred from '.($this->fromRoom?->name ?? '—').' to '.($this->toRoom?->name ?? '—'),
         };
     }
 }

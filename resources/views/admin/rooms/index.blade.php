@@ -71,8 +71,8 @@
             <label class="flex items-center gap-2 text-xs font-medium text-slate-500">
                 Sort
                 <select name="sort" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-700">
-                    <option value="code_asc" @selected($sort === 'code_asc')>Room Number A&ndash;Z</option>
-                    <option value="code_desc" @selected($sort === 'code_desc')>Room Number Z&ndash;A</option>
+                    <option value="name_asc" @selected($sort === 'name_asc')>Room Name A&ndash;Z</option>
+                    <option value="name_desc" @selected($sort === 'name_desc')>Room Name Z&ndash;A</option>
                     <option value="equipment" @selected($sort === 'equipment')>Most Equipment</option>
                     <option value="supplies" @selected($sort === 'supplies')>Most Supplies</option>
                     <option value="recent" @selected($sort === 'recent')>Recently Updated</option>
@@ -110,7 +110,7 @@
             </p>
             <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
                 {{ $filtersOn
-                    ? 'Try another number, name, building, department or kind of room — or clear the filters.'
+                    ? 'Try another name, building, department or kind of room — or clear the filters.'
                     : 'A room is created here and then filled from its own page: the equipment and supplies placed in it gather themselves into the folder.' }}
             </p>
             <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
@@ -129,13 +129,11 @@
             @foreach ($rooms as $room)
                 @php
                     $items = $room->equipment_count + $room->supplies_count;
-                @endphp
-
-                {{-- A room as a folder: the folder itself, then what is inside it
+                @endphp                    {{-- A room as a folder: the folder itself, then what is inside it
                      in numbers, then the way in. The whole card opens the room —
                      a click that lands on a link or a control is left alone, and
-                     a reader dragging across a code gets the text rather than a
-                     page change. --}}
+                     a reader dragging across the name gets the text rather than
+                     a page change. --}}
                 <div data-href="{{ route('admin.rooms.show', $room) }}"
                      class="group flex cursor-pointer flex-col rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-brand-200">
                     <div class="flex items-start gap-3">
@@ -143,8 +141,8 @@
 
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-2">
-                                <p class="truncate font-semibold text-slate-800 transition group-hover:text-brand-800" title="{{ $room->code }} — {{ $room->name }}">
-                                    {{ $room->code }} <span class="font-normal text-slate-500">{{ $room->name }}</span>
+                                <p class="truncate font-semibold text-slate-800 transition group-hover:text-brand-800" title="{{ $room->name }}">
+                                    {{ $room->name }}
                                 </p>
 
                                 @if ($room->is_active)

@@ -108,7 +108,7 @@
                 <select name="room_id" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
                     <option value="">None</option>
                     @foreach ($rooms as $room)
-                        <option value="{{ $room->id }}" @selected($v('room_id') == $room->id)>{{ $room->code }} &mdash; {{ $room->name }}</option>
+                        <option value="{{ $room->id }}" @selected($v('room_id') == $room->id)>{{ $room->name }}</option>
                     @endforeach
                 </select>
             </div>

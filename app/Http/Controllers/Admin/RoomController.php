@@ -39,7 +39,7 @@ class RoomController extends Controller
         $status = (string) $request->get('status', 'all');
         $group = (string) $request->get('group', 'all');
         $type = trim((string) $request->get('type'));
-        $sort = (string) $request->get('sort', 'code_asc');
+        $sort = (string) $request->get('sort', 'name_asc');
 
         $rooms = Room::query()
             // The figures on each folder come straight off the relations, so an
@@ -56,8 +56,9 @@ class RoomController extends Controller
                 // laboratory" and "A101" both work.
                 foreach (preg_split('/\s+/', $search) as $word) {
                     $sub->where(function ($inner) use ($word) {
-                        $inner->where('code', 'like', "%{$word}%")
-                            ->orWhere('name', 'like', "%{$word}%")
+                        // The room number is not a way in any more: the office
+                        // reads a room by its name, what it is and where it is.
+                        $inner->where('name', 'like', "%{$word}%")
                             ->orWhere('building', 'like', "%{$word}%")
                             ->orWhere('floor', 'like', "%{$word}%")
                             ->orWhere('department', 'like', "%{$word}%")
@@ -81,12 +82,12 @@ class RoomController extends Controller
             ->when($group !== 'all' && isset(Room::TYPE_GROUPS[$group]),
                 fn ($query) => $query->whereIn('type', Room::TYPE_GROUPS[$group]))
             ->when($type !== '', fn ($query) => $query->where('type', $type))
-            ->when($sort === 'code_desc', fn ($query) => $query->orderByDesc('code'))
-            ->when($sort === 'equipment', fn ($query) => $query->orderByRaw('(equipment_property_count + supply_property_count) DESC')->orderBy('code'))
-            ->when($sort === 'supplies', fn ($query) => $query->orderByRaw('(equipment_consumable_count + supply_consumable_count) DESC')->orderBy('code'))
+            ->when($sort === 'name_desc', fn ($query) => $query->orderByDesc('name'))
+            ->when($sort === 'equipment', fn ($query) => $query->orderByRaw('(equipment_property_count + supply_property_count) DESC')->orderBy('name'))
+            ->when($sort === 'supplies', fn ($query) => $query->orderByRaw('(equipment_consumable_count + supply_consumable_count) DESC')->orderBy('name'))
             ->when($sort === 'recent', fn ($query) => $query->orderByDesc('updated_at'))
-            ->when(! in_array($sort, ['code_desc', 'equipment', 'supplies', 'recent'], true),
-                fn ($query) => $query->orderBy('code'))
+            ->when(! in_array($sort, ['name_desc', 'equipment', 'supplies', 'recent'], true),
+                fn ($query) => $query->orderBy('name'))
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
@@ -187,7 +188,7 @@ class RoomController extends Controller
             // What the "Transfer Item" sheet offers: everything physically in
             // this room, and the rooms it can be sent to.
             'roomItems' => $inventoryEquipment->concat($inventorySupplies)->sortBy('name')->values(),
-            'destinations' => Room::whereKeyNot($room->id)->orderBy('code')->get(),
+            'destinations' => Room::whereKeyNot($room->id)->orderBy('name')->get(),
         ]);
     }
 
@@ -200,9 +201,16 @@ class RoomController extends Controller
     {
         $data = $this->validated($request);
 
-        $room = Room::create($data);
+        // The room number is not asked for any more: the room is filed under the
+        // name it was given, and the row's own code is minted here so the column
+        // the older records are keyed by is never empty. The number is read under
+        // a lock inside the transaction, so two rooms created at once cannot take
+        // the same one.
+        $room = DB::transaction(function () use ($data) {
+            return Room::create($data + ['code' => Room::nextCode()]);
+        });
 
-        ActivityLog::record('created', 'rooms', "Created room \"{$room->name}\" ({$room->code}).");
+        ActivityLog::record('created', 'rooms', "Created room \"{$room->name}\".");
 
         return redirect()->route('admin.rooms.index')->with('success', "Room \"{$room->name}\" created successfully.");
     }
@@ -218,7 +226,7 @@ class RoomController extends Controller
 
         $room->update($data);
 
-        ActivityLog::record('updated', 'rooms', "Updated room \"{$room->name}\" ({$room->code}).");
+        ActivityLog::record('updated', 'rooms', "Updated room \"{$room->name}\".");
 
         return redirect()->route('admin.rooms.index')->with('success', "Room \"{$room->name}\" updated successfully.");
     }
@@ -258,17 +266,17 @@ class RoomController extends Controller
             $previous = $item->room;
 
             if ($previous && $previous->id === $room->id) {
-                return back()->with('error', "{$item->name} is already in {$room->code}.");
+                return back()->with('error', "{$item->name} is already in {$room->name}.");
             }
 
             $item->roomMovementNotes = $data['notes'] ?? null;
             $item->update(['room_id' => $room->id]);
 
-            ActivityLog::record('updated', 'rooms', "Placed {$item->name} in {$room->code}".($previous ? ", moved from {$previous->code}." : '.'));
+            ActivityLog::record('updated', 'rooms', "Placed {$item->name} in {$room->name}".($previous ? ", moved from {$previous->name}." : '.'));
 
             return back()->with('success', $previous
-                ? "{$item->name} moved to {$room->code} from {$previous->code}."
-                : "{$item->name} placed in {$room->code}.");
+                ? "{$item->name} moved to {$room->name} from {$previous->name}."
+                : "{$item->name} placed in {$room->name}.");
         });
     }
 
@@ -298,7 +306,7 @@ class RoomController extends Controller
             $item = $this->resolveItem((string) $data['item']);
 
             if ((int) $item->room_id !== $room->id) {
-                return back()->with('error', "{$item->name} is not in {$room->code}.");
+                return back()->with('error', "{$item->name} is not in {$room->name}.");
             }
 
             $destination = Room::findOrFail($data['to_room_id']);
@@ -306,9 +314,9 @@ class RoomController extends Controller
             $item->roomMovementNotes = $data['notes'] ?? null;
             $item->update(['room_id' => $destination->id]);
 
-            ActivityLog::record('updated', 'rooms', "Transferred {$item->name} from {$room->code} to {$destination->code}.");
+            ActivityLog::record('updated', 'rooms', "Transferred {$item->name} from {$room->name} to {$destination->name}.");
 
-            return back()->with('success', "{$item->name} transferred from {$room->code} to {$destination->code}.");
+            return back()->with('success', "{$item->name} transferred from {$room->name} to {$destination->name}.");
         });
     }
 
@@ -350,7 +358,6 @@ class RoomController extends Controller
     private function validated(Request $request, ?Room $room = null): array
     {
         return $request->validate([
-            'code' => ['required', 'string', 'max:50', Rule::unique('rooms', 'code')->ignore($room?->id)],
             'name' => ['required', 'string', 'max:255'],
             'building' => ['nullable', 'string', 'max:255'],
             'floor' => ['nullable', 'string', 'max:100'],

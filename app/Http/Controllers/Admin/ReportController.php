@@ -55,8 +55,8 @@ class ReportController extends Controller
 
         $rows = collect()
             // Only supplies carry a re-order point the office can set.
-            ->concat($supplies->map(fn ($s) => ['Supply', $s->item_code, $s->name, $s->category, $s->quantity_on_hand, $s->reorder_level, number_format($s->unit_cost, 2), $s->room?->code, $s->isLowStock() ? 'Low Stock' : 'OK']))
-            ->concat($equipment->map(fn ($e) => ['Equipment', $e->item_code, $e->name, $e->category, $e->quantity_on_hand, '—', number_format($e->unit_cost, 2), $e->room?->code, ucfirst($e->status)]))
+            ->concat($supplies->map(fn ($s) => ['Supply', $s->item_code, $s->name, $s->category, $s->quantity_on_hand, $s->reorder_level, number_format($s->unit_cost, 2), $s->room?->name, $s->isLowStock() ? 'Low Stock' : 'OK']))
+            ->concat($equipment->map(fn ($e) => ['Equipment', $e->item_code, $e->name, $e->category, $e->quantity_on_hand, '—', number_format($e->unit_cost, 2), $e->room?->name, ucfirst($e->status)]))
             ->toArray();
 
         return $this->respond($request, 'Inventory Summary', $headings, $rows);
@@ -103,7 +103,7 @@ class ReportController extends Controller
             $d->type,
             ucfirst($d->status),
             $d->custodian_name,
-            $d->room?->code,
+            $d->room?->name,
             $d->document_date->format('Y-m-d'),
         ])->toArray();
 
@@ -1261,7 +1261,7 @@ class ReportController extends Controller
                 'property_number' => (string) $item->property_number,
                 'name' => (string) $item->name,
                 'custodian' => $item->custodian_name,
-                'room' => (string) ($item->room?->code ?: $item->room?->name),
+                'room' => (string) $item->room?->name,
                 'via_ics' => $viaIcs->has($item->id),
             ]);
     }
@@ -1288,7 +1288,7 @@ class ReportController extends Controller
             'amount' => round($quantity * $unitCost, 2),
             'date_acquired' => $item->date_acquired,
             'accountable' => $item->custodian_name,
-            'room' => (string) ($item->room?->code ?: $item->room?->name),
+            'room' => (string) $item->room?->name,
         ];
     }
 
@@ -1303,7 +1303,7 @@ class ReportController extends Controller
     private function sharedCustodian(Collection $equipment): array
     {
         $names = $equipment->map(fn (Equipment $item) => $item->custodian_name)->filter()->unique()->values();
-        $rooms = $equipment->map(fn (Equipment $item) => $item->room?->code ?: $item->room?->name)->filter()->unique()->values();
+        $rooms = $equipment->map(fn (Equipment $item) => $item->room?->name)->filter()->unique()->values();
         $room = $rooms->count() === 1 ? $rooms->first() : null;
 
         if ($names->count() !== 1) {

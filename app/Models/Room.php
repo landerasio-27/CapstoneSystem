@@ -114,10 +114,38 @@ class Room extends Model
         return self::TYPES[$this->type] ?? ($this->type ? ucfirst((string) $this->type) : '—');
     }
 
-    /** How many names it answers to: its code, its name and its room number. */
+    /**
+     * How the room reads: its name. The number rooms used to carry is retired —
+     * the office files a room by what it is, not by a code it had to invent —
+     * so nothing on screen spells one out. `code` stays on the row as the
+     * column the records already written against it are keyed by.
+     */
     public function title(): string
     {
-        return trim($this->code.' — '.$this->name, ' —');
+        return (string) $this->name;
+    }
+
+    /**
+     * The internal code a room is filed under when it is created without one.
+     *
+     * The `code` column is NOT NULL and unique, and older records still point at
+     * it, so a room minted from the form takes the next free number in the
+     * reserved "RM-" series. Nothing shows it: it exists so the row has one.
+     * The sequence is read under a lock (see store()), so two rooms created at
+     * once cannot take the same number.
+     */
+    public static function nextCode(): string
+    {
+        $prefix = 'RM-';
+
+        $highest = self::query()
+            ->where('code', 'like', $prefix.'%')
+            ->lockForUpdate()
+            ->pluck('code')
+            ->map(fn ($code) => (int) substr((string) $code, strlen($prefix)))
+            ->max() ?? 0;
+
+        return $prefix.sprintf('%05d', $highest + 1);
     }
 
     /** Everything physically in the room, property and supplies together. */

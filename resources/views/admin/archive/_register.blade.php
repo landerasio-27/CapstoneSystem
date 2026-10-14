@@ -76,7 +76,7 @@
                                 <a href="{{ route('admin.documents.show', $document) }}" class="text-brand-700 hover:underline">{{ $document->document_no }}</a>
                             </td>
                             <td class="px-4 py-3 text-slate-500">{{ $document->type }}</td>
-                            <td class="px-4 py-3 text-slate-500">{{ $document->custodian_name ?: '—' }}{{ $document->room ? ' / '.$document->room->code : '' }}</td>
+                            <td class="px-4 py-3 text-slate-500">{{ $document->custodian_name ?: '—' }}{{ $document->room ? ' / '.$document->room->name : '' }}</td>
                             <td class="px-4 py-3 text-slate-500">{{ ucfirst($document->status) }}</td>
                             <td class="px-4 py-3 text-slate-500">{{ $document->document_date->format('M d, Y') }}</td>
                         </tr>
