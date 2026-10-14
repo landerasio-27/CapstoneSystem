@@ -43,7 +43,10 @@
         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <div class="flex flex-wrap items-center gap-2">
                 <a href="{{ $typeUrl(null) }}" class="{{ $pill }} {{ request('type') ? $pillOff : $pillOn }}">All</a>
-                @foreach (['PAR', 'ICS', 'RIS', 'IAR'] as $type)
+                {{-- Only the papers the register itself holds get a pill. An IAR is
+                     never a row of its own: it is page two of a PAR / ICS / RIS, so
+                     there is nothing for the register to narrow to. --}}
+                @foreach (['PAR', 'ICS', 'RIS'] as $type)
                     <a href="{{ $typeUrl($type) }}" class="{{ $pill }} {{ request('type') === $type ? $pillOn : $pillOff }}">{{ $type }}</a>
                 @endforeach
             </div>

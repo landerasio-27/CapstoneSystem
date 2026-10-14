@@ -516,6 +516,15 @@ class ItemClassificationTest extends TestCase
             ->assertDontSee('PAR-2026-00001')
             ->assertDontSee('RIS-2026-00001');
 
+        // A pill is offered per paper the register itself holds. An IAR is not
+        // one of them — it is page two of a PAR / ICS / RIS, never a row of its
+        // own — so the register offers no IAR to narrow to.
+        $this->actingAs($this->admin)->get('/admin/documents')
+            ->assertOk()
+            ->assertSee('type=PAR', false)
+            ->assertSee('type=RIS', false)
+            ->assertDontSee('type=IAR', false);
+
         // Search reads the paper's number, the items printed on it and the
         // custodian it is filed under.
         foreach (['PAR-2026-00001', 'Dell OptiPlex', 'Bautista'] as $term) {
